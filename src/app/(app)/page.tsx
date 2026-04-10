@@ -129,9 +129,9 @@ export default function Home() {
         </section>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
-          <div className="flex flex-col gap-8 md:col-span-4">
+          <div className="md:col-span-4">
             <div
-              className="flex aspect-square flex-col justify-between rounded-[var(--radius-xl)] p-8"
+              className="flex h-full min-h-80 flex-col justify-between rounded-[var(--radius-xl)] p-8"
               style={{ backgroundColor: "var(--surface-container-low)" }}
             >
               <div>
@@ -155,38 +155,6 @@ export default function Home() {
                 <p className="text-sm text-[#404753]">
                   가벼운 바람이 불어 레이어링하기 좋습니다.
                 </p>
-              </div>
-            </div>
-
-            <div
-              className="flex-grow rounded-[var(--radius-xl)] p-8"
-              style={{
-                backgroundColor: "var(--surface-container-lowest)",
-                boxShadow: "var(--shadow-ambient-md)",
-              }}
-            >
-              <span className="text-xs font-bold tracking-widest text-[#404753]">
-                TODAY&apos;S SCHEDULE
-              </span>
-              <div className="mt-8 space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="h-12 w-1.5 rounded-full bg-[var(--primary)]" />
-                  <div>
-                    <p className="font-bold text-[#191c1d]">고객 미팅</p>
-                    <p className="text-sm text-[#404753]">
-                      오전 10:00 • 디자인 스튜디오
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="h-12 w-1.5 rounded-full bg-[var(--tertiary-container)]" />
-                  <div>
-                    <p className="font-bold text-[#191c1d]">갤러리 오프닝</p>
-                    <p className="text-sm text-[#404753]">
-                      오후 7:00 • 소호 지구
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
