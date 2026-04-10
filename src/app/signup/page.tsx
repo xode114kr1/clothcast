@@ -1,12 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowForwardIcon,
-  LockIcon,
-  MailIcon,
-  PersonIcon,
-} from "@/components/icons";
+import { ArrowRight, Lock, Mail, User } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "회원가입 | ClothCast",
@@ -83,7 +78,7 @@ export default function SignupPage() {
               </label>
               <div className="group relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5 text-[color:var(--muted-foreground)] transition-colors group-focus-within:text-[var(--primary)]">
-                  <PersonIcon className="h-5 w-5" />
+                  <User className="h-5 w-5" strokeWidth={1.75} />
                 </div>
                 <input
                   className="w-full rounded-[var(--radius-md)] border-none py-4 pl-12 pr-4 outline-none transition-all duration-300"
@@ -107,7 +102,7 @@ export default function SignupPage() {
               </label>
               <div className="group relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5 text-[color:var(--muted-foreground)] transition-colors group-focus-within:text-[var(--primary)]">
-                  <MailIcon className="h-5 w-5" />
+                  <Mail className="h-5 w-5" strokeWidth={1.75} />
                 </div>
                 <input
                   className="w-full rounded-[var(--radius-md)] border-none py-4 pl-12 pr-4 outline-none transition-all duration-300"
@@ -131,7 +126,7 @@ export default function SignupPage() {
               </label>
               <div className="group relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5 text-[color:var(--muted-foreground)] transition-colors group-focus-within:text-[var(--primary)]">
-                  <LockIcon className="h-5 w-5" />
+                  <Lock className="h-5 w-5" strokeWidth={1.75} />
                 </div>
                 <input
                   className="w-full rounded-[var(--radius-md)] border-none py-4 pl-12 pr-4 outline-none transition-all duration-300"
@@ -179,7 +174,7 @@ export default function SignupPage() {
             >
               Sign up
               <span className="transition-transform group-hover:translate-x-1">
-                <ArrowForwardIcon className="h-5 w-5" />
+                <ArrowRight className="h-5 w-5" strokeWidth={1.75} />
               </span>
             </button>
           </form>
