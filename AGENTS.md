@@ -15,9 +15,12 @@ When modifying code, ensure the change is consistent with those documents, inclu
 - `docs/DESIGN.md`
 - `docs/Function_Specification.md`
 - `docs/Git_Commit_Convention.md`
+- `docs/PR_Template.md`
 
 If the requested change conflicts with the docs, call out the conflict explicitly and prefer updating the code in a way that matches the documented requirements unless the user asks to change the docs too.
 
 When the user asks for a git commit message, follow `docs/Git_Commit_Convention.md` by default unless the user explicitly requests a different format.
 Unless the user explicitly requests another language, write commit messages primarily in Korean.
+When the user asks for a pull request title/body or PR description, follow `docs/PR_Template.md` by default unless the user explicitly requests a different format.
+Unless the user explicitly requests another language, write PR content primarily in Korean.
 <!-- END:project-docs-rules -->
