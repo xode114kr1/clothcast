@@ -1,0 +1,13 @@
+<svg width="720" height="960" viewBox="0 0 720 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="720" height="960" fill="#F4F5F6"/>
+  <rect x="84" y="72" width="552" height="816" rx="40" fill="#FFFFFF"/>
+  <path d="M266 162L360 118L454 162L530 314V786H190V314L266 162Z" fill="#FBFBFC"/>
+  <path d="M336 224H384V786H336V224Z" fill="#E1E3E4"/>
+  <path d="M190 314L128 454L190 494V786H106V486L182 286L190 314Z" fill="#F1F2F4"/>
+  <path d="M530 314L592 454L530 494V786H614V486L538 286L530 314Z" fill="#F1F2F4"/>
+  <path d="M310 186L360 154L410 186L360 246L310 186Z" fill="#D9DADB"/>
+  <circle cx="360" cy="332" r="8" fill="#0060A8"/>
+  <circle cx="360" cy="388" r="8" fill="#0060A8"/>
+  <circle cx="360" cy="444" r="8" fill="#0060A8"/>
+  <text x="360" y="838" text-anchor="middle" fill="#0060A8" font-family="Arial, sans-serif" font-size="28" font-weight="700">Dummy Silk Shirt</text>
+</svg>
