@@ -11,16 +11,16 @@ import {
 
 const recommendationItems = [
   {
-    category: "OUTER",
-    title: "Merino Wool Overcoat",
+    category: "아우터",
+    title: "메리노 울 오버코트",
     src: "https://lh3.googleusercontent.com/aida-public/AB6AXuCUQp3zyr_pFxwNqX4mLQ37Pgp3wh4U5vpyqpQ82K0NUquLIc3aPNzQcS3YmpwIdBOLKVVX1t6gQJ8BxRlYect0cINUnCnndqwyKhWCuFV72Z9wM5zX6uGOjH0CKwM8SldklIswkDZDM5tE6ShmsTqkjP6vBss2aO45MkgagP7_Fg-gGOsxlUxAALgV1QQFmYWlSm1ntN01gkz6J7bplDDX9NaQOunMRJjDcZXkqi2kxaM6CVbZbUlgHTunVFAODMsNCcBWuV-fRs0",
-    alt: "professional charcoal merino wool overcoat on a minimalist white background with soft shadows",
+    alt: "차콜 색상의 메리노 울 오버코트",
   },
   {
-    category: "BASE",
-    title: "Poplin Button-Down",
+    category: "상의",
+    title: "포플린 버튼다운 셔츠",
     src: "https://lh3.googleusercontent.com/aida-public/AB6AXuDTV-tl3pgIzXbZiqbXIDLx7iFEZ37He_oRXdHcLyjr3LZA4X6ccsdAnChlbT7UbsOjOD9SVGeHzcyW1-OoTCwr9SXmws3xdv8m9kpLJQ39IF6tbL-2c1rf1Q0DaekduwoDuPAE2l4OGlEH8G7NfW4vOihja0eJzm6EcwJeK453xRZpWPsnkETBV6mOwZ4fr5fsHa6ADnEX1xQ5bgr9oqYgrEOjlsZQ-M5HNHZpjKjhZJYtP_f3qv3b8gg1DWY_TPBnSZ73hR02Udg",
-    alt: "crisp white cotton button-down shirt neatly folded on a clean light grey surface",
+    alt: "깔끔하게 접힌 화이트 코튼 버튼다운 셔츠",
   },
 ];
 
@@ -37,8 +37,7 @@ export default function RecommendationsPage() {
               Curated for your day.
             </h1>
             <p className="max-w-xl text-xl text-[#404753]">
-              Intelligent style recommendations synced with local conditions and
-              your personal agenda.
+              현재 날씨와 오늘의 상황을 반영해 입기 좋은 조합을 추천합니다.
             </p>
           </div>
 
@@ -51,7 +50,7 @@ export default function RecommendationsPage() {
                 <div className="mb-1 flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-[var(--primary)]" strokeWidth={2} />
                   <span className="text-xs font-bold uppercase tracking-[0.05em] text-[#404753]">
-                    SOHO DISTRICT
+                    소호 지구
                   </span>
                 </div>
                 <div
@@ -60,7 +59,7 @@ export default function RecommendationsPage() {
                 >
                   18°C
                 </div>
-                <div className="mt-1 font-medium text-[#404753]">Partly Cloudy</div>
+                <div className="mt-1 font-medium text-[#404753]">구름 조금</div>
               </div>
 
               <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[rgb(211_228_255_/_0.3)]">
@@ -79,13 +78,13 @@ export default function RecommendationsPage() {
               className="mb-6 block text-2xl font-bold text-[#191c1d]"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              What&apos;s the occasion?
+              오늘 어떤 일정이 있나요?
             </label>
             <div className="flex flex-col gap-4 md:flex-row">
               <div className="relative flex-grow">
                 <input
                   className="w-full rounded-[var(--radius-md)] border-none px-8 py-5 text-lg text-[#191c1d] outline-none placeholder:text-[#707884]"
-                  placeholder="e.g. I have an interview today"
+                  placeholder="예: 오늘 면접이 있어"
                   style={{ backgroundColor: "var(--surface-container-highest)" }}
                   type="text"
                 />
@@ -116,7 +115,7 @@ export default function RecommendationsPage() {
             <div className="flex items-center gap-2 text-[var(--primary)]">
               <CheckCircle2 className="h-4 w-4" strokeWidth={2.2} />
               <span className="text-sm font-bold uppercase tracking-wider">
-                READY TO WEAR
+                바로 입기 좋음
               </span>
             </div>
           </div>
@@ -201,25 +200,22 @@ export default function RecommendationsPage() {
 
                 <div className="space-y-6 leading-relaxed text-[#404753]">
                   <p>
-                    Selection tailored for a professional environment at{" "}
-                    <span className="font-bold text-[#191c1d]">18°C</span> with a
-                    humidity of 45%.
+                    <span className="font-bold text-[#191c1d]">18°C</span>의 날씨와
+                    습도 45% 조건에서 격식 있는 일정에 맞춘 조합입니다.
                   </p>
 
                   <div className="rounded-[var(--radius-md)] bg-white p-6 shadow-sm">
                     <p className="italic">
-                      &quot;The Merino Wool Overcoat provides a formal silhouette
-                      essential for an interview while offering breathable warmth
-                      for mid-range temperatures. Pairing with a crisp Poplin
-                      ensures you remain comfortable indoors during the
-                      meeting.&quot;
+                      &quot;메리노 울 오버코트는 면접에 어울리는 단정한 실루엣을 만들고,
+                      선선한 기온에서도 답답하지 않은 보온감을 줍니다. 포플린 셔츠를
+                      함께 입으면 실내에서도 깔끔하고 편안하게 유지됩니다.&quot;
                     </p>
                   </div>
 
                   <div className="flex flex-col gap-4 pt-4">
                     <div className="flex items-center gap-3">
                       <Snowflake className="h-5 w-5 text-[var(--secondary)]" strokeWidth={2} />
-                      <span className="text-sm">Thermal efficiency: Moderate</span>
+                      <span className="text-sm">보온감: 적당함</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <BriefcaseBusiness
@@ -227,7 +223,7 @@ export default function RecommendationsPage() {
                         strokeWidth={2}
                       />
                       <span className="text-sm">
-                        Context: Formal / Professional
+                        상황: 포멀 / 비즈니스
                       </span>
                     </div>
                   </div>

@@ -16,7 +16,7 @@ const bodyFont = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: "ClothCast",
-  description: "ClothCast web app",
+  description: "날씨와 일정에 맞춰 옷장 속 코디를 추천하는 ClothCast 웹 앱",
 };
 
 export default function RootLayout({

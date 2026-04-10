@@ -10,15 +10,15 @@ export const metadata: Metadata = {
 
 const socialProofUsers = [
   {
-    alt: "User 1",
+    alt: "사용자 1",
     src: "https://lh3.googleusercontent.com/aida-public/AB6AXuDeRJdKyocPpL1kS0SIp0tHGBqrZEB28SKIMX5yR_edu7RBd2QzDbBS_jDVsIgeHnssT1a6YtkPP4F0P1gIPu6z8nwU0KmYc4oACxCtBLKZkTCC479ZnbWPyO3kU2HTGE6rqt6N4NZpBgCn7IRn9qXK5OptGYqxVGbDclouv5P3BBrQa1RmXEJMWDtEyMUX-oFrOrlI-EZo_IHukeDAGy691NxBnUlFrWEUzNiSIQOnudK318jbYjsWsFa2XWjosNoe5UoPPRZJosY",
   },
   {
-    alt: "User 2",
+    alt: "사용자 2",
     src: "https://lh3.googleusercontent.com/aida-public/AB6AXuALB4-extGtH1gNjeFVZ-OhMi_VqonwxGHbi4Bpckzs58Woja1779dlKl694_0WQLFVolxdWAo9AGt3uUidMNb9LH4H9Fjur3T6vvSuQeWTL1Hjq75X14br91onyOVbcP0MDWFDRVRkiZuGX7NAqKJszncIdVdGHmnvyPeNHHiwTEUrxFqHx_QIBHWh94LRk017Tuu-0gHwE8WxOp6Q_49-7_-TPO0XTNyYBE17jcZ1xLG_B92ALcdJebSbACgQH8hpVdFoy3tRURM",
   },
   {
-    alt: "User 3",
+    alt: "사용자 3",
     src: "https://lh3.googleusercontent.com/aida-public/AB6AXuDosbx7FtKP595Xb-jo0xbuNaJ826ESr1RZVvXvxJ058HwyWtB90R6lM3SrqAPrscHq-nbczjFAPx3dn-d_EQD54dEkDROQmRW0ieDnsxgBU3_7jIx0TYRz6gEuV9pECekX2ihAxHt5FQv6k3y_ND3tZRzu0kPtZgz90SjAZAsV0-oy0gLV17bRepB2Kum0SL1EC2tsYDwH4J50OcYojur299F4oLYDWF_OzQn1jxGhwGCQ1Yr31mphw8GAsVSUrgghNQSqOp17VIc",
   },
 ];
@@ -36,7 +36,7 @@ export default function LoginPage() {
             style={{ background: "var(--gradient-hero)" }}
           >
             <Image
-              alt="ClothCast logo"
+              alt="ClothCast 로고"
               className="h-full w-full object-cover"
               height={64}
               priority
@@ -80,7 +80,7 @@ export default function LoginPage() {
               fontFamily: "var(--font-display)",
             }}
           >
-            Welcome back
+            다시 오신 걸 환영해요
           </h2>
 
           <form className="space-y-6">
@@ -93,7 +93,7 @@ export default function LoginPage() {
                   fontFamily: "var(--font-body)",
                 }}
               >
-                Email Address
+                이메일
               </label>
               <div className="relative">
                 <span
@@ -126,14 +126,14 @@ export default function LoginPage() {
                     fontFamily: "var(--font-body)",
                   }}
                 >
-                  Password
+                  비밀번호
                 </label>
                 <Link
                   className="text-xs font-bold transition-opacity hover:opacity-70"
                   href="#"
                   style={{ color: "var(--primary)" }}
                 >
-                  Forgot?
+                  비밀번호 찾기
                 </Link>
               </div>
               <div className="relative">
@@ -169,7 +169,7 @@ export default function LoginPage() {
                 strokeWidth={1.75}
               />
               <p className="text-sm font-medium text-[var(--on-error-container)]">
-                Invalid email or password. Please try again.
+                이메일 또는 비밀번호가 올바르지 않습니다. 다시 시도해주세요.
               </p>
             </div>
 
@@ -182,7 +182,7 @@ export default function LoginPage() {
                 }}
                 type="submit"
               >
-                <span>Login</span>
+                <span>로그인</span>
                 <ArrowRight className="h-6 w-6" strokeWidth={1.75} />
               </button>
             </div>
@@ -190,13 +190,13 @@ export default function LoginPage() {
 
           <div className="mt-10 text-center">
             <p className="text-sm text-[#404753]">
-              Don&apos;t have an account?
+              아직 계정이 없나요?
               <Link
                 className="ml-1 font-bold transition-opacity hover:opacity-70"
                 href="/signup"
                 style={{ color: "var(--primary)" }}
               >
-                Sign up
+                회원가입
               </Link>
             </p>
           </div>
@@ -217,7 +217,7 @@ export default function LoginPage() {
             ))}
           </div>
           <p className="text-xs font-medium text-[#707884]">
-            Joined by 10k+ style enthusiasts
+            1만 명 이상의 스타일 애호가가 함께하고 있어요
           </p>
         </div>
       </div>

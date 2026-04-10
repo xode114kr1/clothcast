@@ -8,28 +8,28 @@ import {
 
 const recentRecommendations = [
   {
-    date: "OCTOBER 24, 2024",
-    title: "Linen Layering for Autumn",
+    date: "2024년 10월 24일",
+    title: "가을 린넨 레이어링",
     description:
-      "A breathable mix of cream linen textures paired with slate grey chinos for a temperate day.",
+      "선선한 날씨에 맞춰 크림 린넨과 슬레이트 그레이 치노를 가볍게 조합했습니다.",
     src: "/images/profile-rec-linen-layering.svg",
-    alt: "Dummy flat lay placeholder for autumn outfit recommendation",
+    alt: "가을 코디 추천 플랫레이 예시 이미지",
   },
   {
-    date: "OCTOBER 22, 2024",
-    title: "Urban Noir Evening",
+    date: "2024년 10월 22일",
+    title: "어반 누아르 이브닝",
     description:
-      "Monochromatic depth using textured knits and polished leather for a sophisticated city look.",
+      "텍스처가 있는 니트와 광택 있는 가죽으로 완성한 세련된 도심형 코디입니다.",
     src: "/images/profile-rec-urban-noir.svg",
-    alt: "Dummy evening outfit placeholder recommendation",
+    alt: "저녁 코디 추천 예시 이미지",
   },
   {
-    date: "OCTOBER 19, 2024",
-    title: "Soft Tonal Weekend",
+    date: "2024년 10월 19일",
+    title: "부드러운 톤온톤 주말",
     description:
-      "A relaxed palette of sage and oat, emphasizing comfort without sacrificing structural intent.",
+      "세이지와 오트 컬러로 편안함과 단정한 실루엣을 함께 살린 주말 코디입니다.",
     src: "/images/profile-rec-soft-tonal.svg",
-    alt: "Dummy weekend outfit placeholder recommendation",
+    alt: "주말 코디 추천 예시 이미지",
   },
 ];
 
@@ -44,7 +44,7 @@ export default function ProfilePage() {
               style={{ backgroundColor: "var(--surface-container-highest)" }}
             >
               <Image
-                alt="Alex profile"
+                alt="Alex 프로필"
                 className="h-full w-full object-cover"
                 height={192}
                 src="/images/profile-alex.svg"
@@ -67,8 +67,7 @@ export default function ProfilePage() {
               Alex
             </h1>
             <p className="max-w-lg text-[#404753]">
-              Curating a minimalist wardrobe with a focus on sustainable fabrics
-              and modern silhouettes.
+              지속 가능한 소재와 모던한 실루엣을 중심으로 미니멀한 옷장을 관리하고 있습니다.
             </p>
           </div>
         </section>
@@ -80,7 +79,7 @@ export default function ProfilePage() {
           >
             <div className="space-y-1">
               <p className="text-xs uppercase tracking-wider text-[#707884]">
-                Total Clothing Items
+                등록한 옷
               </p>
               <p
                 className="text-6xl font-bold"
@@ -100,7 +99,7 @@ export default function ProfilePage() {
           >
             <div className="space-y-1">
               <p className="text-xs uppercase tracking-wider text-[#707884]">
-                Recent Recommendations
+                Recent Picks
               </p>
               <p
                 className="text-6xl font-bold"
@@ -144,7 +143,7 @@ export default function ProfilePage() {
                     width={640}
                   />
                   <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/40 to-transparent p-8 opacity-0 transition-opacity group-hover:opacity-100">
-                    <span className="font-bold text-white">Quick View</span>
+                    <span className="font-bold text-white">빠르게 보기</span>
                   </div>
                 </div>
                 <div className="space-y-2">

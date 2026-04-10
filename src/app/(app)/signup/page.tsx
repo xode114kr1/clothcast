@@ -31,7 +31,7 @@ export default function SignupPage() {
           <div className="mb-12 flex flex-col items-center">
             <div className="mb-6 flex h-16 w-16 items-center justify-center overflow-hidden rounded-[1.25rem]">
               <Image
-                alt="ClothCast logo"
+                alt="ClothCast 로고"
                 className="h-full w-full object-cover"
                 height={64}
                 priority
@@ -58,13 +58,13 @@ export default function SignupPage() {
               className="theme-heading text-[1.75rem] font-bold tracking-tight"
               style={{ color: "var(--foreground)" }}
             >
-              Create your account
+              계정 만들기
             </h2>
             <p
               className="mt-2 text-sm"
               style={{ color: "var(--muted-foreground)" }}
             >
-              Join the community of digital fashion curators.
+              내 옷장에 맞춘 코디 추천을 시작하세요.
             </p>
           </div>
 
@@ -74,7 +74,7 @@ export default function SignupPage() {
                 className="ml-1 block text-xs font-bold uppercase tracking-[0.05em] text-[var(--muted-foreground)]"
                 htmlFor="nickname"
               >
-                Nickname
+                닉네임
               </label>
               <div className="group relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5 text-[color:var(--muted-foreground)] transition-colors group-focus-within:text-[var(--primary)]">
@@ -83,7 +83,7 @@ export default function SignupPage() {
                 <input
                   className="w-full rounded-[var(--radius-md)] border-none py-4 pl-12 pr-4 outline-none transition-all duration-300"
                   id="nickname"
-                  placeholder="FashionEnthusiast"
+                  placeholder="패션러버"
                   style={{
                     backgroundColor: "var(--surface-container-highest)",
                     color: "var(--foreground)",
@@ -98,7 +98,7 @@ export default function SignupPage() {
                 className="ml-1 block text-xs font-bold uppercase tracking-[0.05em] text-[var(--muted-foreground)]"
                 htmlFor="email"
               >
-                Email Address
+                이메일
               </label>
               <div className="group relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5 text-[color:var(--muted-foreground)] transition-colors group-focus-within:text-[var(--primary)]">
@@ -107,7 +107,7 @@ export default function SignupPage() {
                 <input
                   className="w-full rounded-[var(--radius-md)] border-none py-4 pl-12 pr-4 outline-none transition-all duration-300"
                   id="email"
-                  placeholder="name@atelier.com"
+                  placeholder="name@example.com"
                   style={{
                     backgroundColor: "var(--surface-container-highest)",
                     color: "var(--foreground)",
@@ -122,7 +122,7 @@ export default function SignupPage() {
                 className="ml-1 block text-xs font-bold uppercase tracking-[0.05em] text-[var(--muted-foreground)]"
                 htmlFor="password"
               >
-                Password
+                비밀번호
               </label>
               <div className="group relative">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5 text-[color:var(--muted-foreground)] transition-colors group-focus-within:text-[var(--primary)]">
@@ -145,23 +145,23 @@ export default function SignupPage() {
               className="px-1 text-[11px] leading-relaxed"
               style={{ color: "var(--muted-foreground)" }}
             >
-              By signing up, you agree to our{" "}
+              회원가입하면 ClothCast의{" "}
               <Link
                 className="font-semibold hover:underline"
                 href="#"
                 style={{ color: "var(--primary)" }}
               >
-                Terms of Service
+                서비스 이용약관
               </Link>{" "}
-              and{" "}
+              및{" "}
               <Link
                 className="font-semibold hover:underline"
                 href="#"
                 style={{ color: "var(--primary)" }}
               >
-                Privacy Policy
+                개인정보 처리방침
               </Link>
-              .
+              에 동의하게 됩니다.
             </p>
 
             <button
@@ -172,7 +172,7 @@ export default function SignupPage() {
               }}
               type="submit"
             >
-              Sign up
+              회원가입
               <span className="transition-transform group-hover:translate-x-1">
                 <ArrowRight className="h-5 w-5" strokeWidth={1.75} />
               </span>
@@ -181,13 +181,13 @@ export default function SignupPage() {
 
           <div className="mt-10 pt-8 text-center">
             <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-              Already have an account?
+              이미 계정이 있나요?
               <Link
                 className="ml-1 font-bold transition-colors"
                 href="#"
                 style={{ color: "var(--primary)" }}
               >
-                Login
+                로그인
               </Link>
             </p>
           </div>

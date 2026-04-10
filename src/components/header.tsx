@@ -8,7 +8,7 @@ import { Bell, Settings } from "lucide-react";
 const navItems = [
   { key: "home", label: "Home", href: "/" },
   { key: "wardrobe", label: "Wardrobe", href: "/wardrobe" },
-  { key: "recommendations", label: "Recommendations", href: "/recommendations" },
+  { key: "recommendations", label: "recommendation", href: "/recommendations" },
   { key: "profile", label: "Profile", href: "/profile" },
 ] as const;
 
@@ -74,7 +74,7 @@ export function Header() {
             style={{ backgroundColor: "var(--surface-container-high)" }}
           >
             <Image
-              alt="User profile avatar"
+              alt="사용자 프로필 아바타"
               className="h-full w-full object-cover"
               height={40}
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTnHQAJ8kxre13OPfnOgscWrd9qgaJupjzEvvverdzUdf38c8KbMfNPbMZVY1VjNDejzXDnsIR-hAHeAjjPcZNTWylqHS8TBLbRK4oxT3bi-jgzNewhAof9fe11vcmFuNs_LVY7c8LhFONoZJq1wWejRWy6RbAL2O_nNBfUCr062ncRaB6eBQzW78mngBUM2GnzpIaq7j40rNPaEC3xYNVf2-LR7s8rs6mPMWaU2cHUxr2m4qS-umHX4NHqJVTu7yl5hJHvyuz1Ns"

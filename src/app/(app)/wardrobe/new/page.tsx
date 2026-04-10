@@ -4,18 +4,18 @@ import {
   ImageUp,
 } from "lucide-react";
 
-const categories = ["TOP", "OUTER", "PANTS", "SHOES"] as const;
+const categories = ["상의", "아우터", "하의", "신발"] as const;
 const palette = [
-  { name: "Black", color: "#0f172a", active: false },
-  { name: "Light Gray", color: "#e2e8f0", active: false },
-  { name: "Blue", color: "#2563eb", active: true },
-  { name: "Brown", color: "#92400e", active: false },
+  { name: "블랙", color: "#0f172a", active: false },
+  { name: "라이트 그레이", color: "#e2e8f0", active: false },
+  { name: "블루", color: "#2563eb", active: true },
+  { name: "브라운", color: "#92400e", active: false },
 ];
 
 const styleTags = [
-  { label: "Casual", active: true },
-  { label: "Formal", active: false },
-  { label: "Sporty", active: false },
+  { label: "캐주얼", active: true },
+  { label: "포멀", active: false },
+  { label: "스포티", active: false },
 ];
 
 export default function NewWardrobeItemPage() {
@@ -25,7 +25,7 @@ export default function NewWardrobeItemPage() {
         <div className="mx-auto max-w-4xl">
           <div className="mb-12">
             <span className="text-[0.6875rem] font-bold uppercase tracking-[0.05em] text-[var(--primary)]">
-              The Digital Atelier
+              Digital Atelier
             </span>
             <h1
               className="mt-2 text-4xl font-extrabold tracking-tight text-[var(--foreground)] md:text-5xl"
@@ -34,8 +34,7 @@ export default function NewWardrobeItemPage() {
               New Addition
             </h1>
             <p className="mt-4 max-w-lg text-[#404753]">
-              Curate your digital wardrobe with precision. Each item added
-              enhances your personalized style forecast.
+              내 옷장에 아이템을 추가하면 더 정확한 코디 추천을 받을 수 있습니다.
             </p>
           </div>
 
@@ -59,22 +58,22 @@ export default function NewWardrobeItemPage() {
                     className="font-bold text-[var(--foreground)]"
                     style={{ fontFamily: "var(--font-display)" }}
                   >
-                    Capture the Detail
+                    옷 사진 추가
                   </h3>
                   <p className="text-sm text-[#404753]">
-                    Drag high-resolution image here or{" "}
+                    고화질 이미지를 여기에 끌어오거나{" "}
                     <span className="font-bold text-[var(--primary)]">
-                      browse
+                      파일을 선택하세요
                     </span>
                   </p>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-[#707884]">
-                    PNG, JPG up to 10MB
+                    PNG, JPG 최대 10MB
                   </p>
                 </div>
 
                 <div className="pointer-events-none absolute inset-0 opacity-5">
                   <Image
-                    alt="Dummy clothing upload ghost"
+                    alt="옷 업로드 예시 이미지"
                     className="h-full w-full object-cover"
                     fill
                     src="/images/add-clothing-ghost.svg"
@@ -94,11 +93,11 @@ export default function NewWardrobeItemPage() {
               <form className="space-y-8">
                 <div className="space-y-2">
                   <label className="text-[0.6875rem] font-bold uppercase tracking-[0.05em] text-[#404753]">
-                    Product Name
+                    옷 이름
                   </label>
                   <input
                     className="w-full rounded-[var(--radius-md)] border-none px-6 py-4 font-medium text-[var(--foreground)] outline-none transition-all placeholder:text-[#707884]"
-                    placeholder="e.g. Italian Linen Blazer"
+                    placeholder="예: 이탈리안 린넨 블레이저"
                     style={{ backgroundColor: "var(--surface-container-highest)" }}
                     type="text"
                   />
@@ -106,7 +105,7 @@ export default function NewWardrobeItemPage() {
 
                 <div className="space-y-3">
                   <label className="text-[0.6875rem] font-bold uppercase tracking-[0.05em] text-[#404753]">
-                    Classification
+                    카테고리
                   </label>
                   <div className="flex flex-wrap gap-3">
                     {categories.map((category, index) => (
@@ -127,7 +126,7 @@ export default function NewWardrobeItemPage() {
 
                 <div className="space-y-3">
                   <label className="text-[0.6875rem] font-bold uppercase tracking-[0.05em] text-[#404753]">
-                    Primary Palette
+                    대표 색상
                   </label>
                   <div className="flex gap-4">
                     {palette.map((item) => (
@@ -154,22 +153,22 @@ export default function NewWardrobeItemPage() {
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                   <div className="space-y-3">
                     <label className="text-[0.6875rem] font-bold uppercase tracking-[0.05em] text-[#404753]">
-                      Seasonal Context
+                      계절
                     </label>
                     <select
                       className="w-full appearance-none rounded-[var(--radius-md)] border-none px-4 py-4 font-medium text-[var(--foreground)] outline-none transition-all"
                       style={{ backgroundColor: "var(--surface-container-highest)" }}
                     >
-                      <option>SPRING</option>
-                      <option>SUMMER</option>
-                      <option>FALL</option>
-                      <option>WINTER</option>
+                      <option>봄</option>
+                      <option>여름</option>
+                      <option>가을</option>
+                      <option>겨울</option>
                     </select>
                   </div>
 
                   <div className="space-y-3">
                     <label className="text-[0.6875rem] font-bold uppercase tracking-[0.05em] text-[#404753]">
-                      Style Tags
+                      스타일 태그
                     </label>
                     <div className="flex flex-wrap gap-2">
                       {styleTags.map((tag) => (
@@ -198,7 +197,7 @@ export default function NewWardrobeItemPage() {
                     className="rounded-full px-11 py-4 text-sm font-bold text-[var(--primary)] transition-all hover:bg-[rgb(211_228_255_/_0.3)]"
                     type="button"
                   >
-                    Cancel
+                    취소
                   </button>
                   <button
                     className="rounded-full px-11 py-4 text-sm font-bold text-white shadow-lg transition-all hover:scale-105 active:scale-95"

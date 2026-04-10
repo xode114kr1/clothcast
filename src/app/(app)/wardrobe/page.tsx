@@ -4,52 +4,46 @@ import { Plus, Pencil, Trash2 } from "lucide-react";
 
 const wardrobeItems = [
   {
-    title: "Raw Silk Shirt",
-    category: "TOP",
-    tags: ["Formal", "Minimalist"],
+    title: "실크 셔츠",
+    category: "상의",
+    tags: ["포멀", "미니멀"],
     src: "/images/wardrobe-raw-silk-shirt.svg",
-    alt: "Dummy raw silk shirt placeholder image",
-    offset: "",
+    alt: "실크 셔츠 예시 이미지",
   },
   {
-    title: "Navy Cashmere Overcoat",
-    category: "OUTERWEAR",
-    tags: ["Classic", "Winter"],
+    title: "네이비 캐시미어 코트",
+    category: "아우터",
+    tags: ["클래식", "겨울"],
     src: "/images/wardrobe-cashmere-overcoat.svg",
-    alt: "Dummy navy cashmere overcoat placeholder image",
-    offset: "",
+    alt: "네이비 캐시미어 코트 예시 이미지",
   },
   {
-    title: "Selvedge Denim",
-    category: "BOTTOM",
-    tags: ["Casual", "Artisan"],
+    title: "셀비지 데님",
+    category: "하의",
+    tags: ["캐주얼", "장인"],
     src: "/images/wardrobe-selvedge-denim.svg",
-    alt: "Dummy selvedge denim placeholder image",
-    offset: "lg:translate-y-8",
+    alt: "셀비지 데님 예시 이미지",
   },
   {
-    title: "Merino Wool Sweater",
-    category: "TOP",
-    tags: ["Modern", "Essentials"],
+    title: "메리노 울 스웨터",
+    category: "상의",
+    tags: ["모던", "기본템"],
     src: "/images/wardrobe-merino-sweater.svg",
-    alt: "Dummy merino wool sweater placeholder image",
-    offset: "lg:translate-y-8",
+    alt: "메리노 울 스웨터 예시 이미지",
   },
   {
-    title: "Leather Chelsea Boots",
-    category: "FOOTWEAR",
-    tags: ["Evening", "Formal"],
+    title: "레더 첼시 부츠",
+    category: "신발",
+    tags: ["저녁", "포멀"],
     src: "/images/wardrobe-chelsea-boots.svg",
-    alt: "Dummy leather chelsea boots placeholder image",
-    offset: "xl:mt-4",
+    alt: "레더 첼시 부츠 예시 이미지",
   },
   {
-    title: "Linen Trousers",
-    category: "BOTTOM",
-    tags: ["Summer", "Relaxed"],
+    title: "린넨 트라우저",
+    category: "하의",
+    tags: ["여름", "편안함"],
     src: "/images/wardrobe-linen-trousers.svg",
-    alt: "Dummy linen trousers placeholder image",
-    offset: "xl:mt-4",
+    alt: "린넨 트라우저 예시 이미지",
   },
 ];
 
@@ -69,8 +63,7 @@ export default function WardrobePage() {
               My Wardrobe
             </h1>
             <p className="max-w-md text-lg leading-relaxed text-[#404753]">
-              A curated collection of your finest pieces, organized for
-              effortless style discovery.
+              내가 가진 옷을 한눈에 보고, 오늘의 조합을 더 쉽게 찾을 수 있습니다.
             </p>
           </div>
 
@@ -91,7 +84,7 @@ export default function WardrobePage() {
           {wardrobeItems.map((item) => (
             <article
               key={item.title}
-              className={`group relative flex flex-col overflow-hidden rounded-[var(--radius-xl)] transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl ${item.offset}`}
+              className="group relative flex flex-col overflow-hidden rounded-[var(--radius-xl)] transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl"
               style={{
                 backgroundColor: "var(--surface-container-lowest)",
                 boxShadow: "var(--shadow-ambient-sm)",

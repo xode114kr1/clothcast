@@ -22,21 +22,21 @@ export function Footer() {
             ClothCast Atelier
           </span>
           <p className="mt-2 text-slate-400">
-            © 2024 ClothCast Atelier. All rights reserved.
+            © 2024 ClothCast Atelier. 모든 권리 보유.
           </p>
         </div>
         <div className="flex gap-8">
           <Link className="text-slate-400 transition-colors hover:text-blue-500" href="#">
-            Privacy
+            개인정보
           </Link>
           <Link className="text-slate-400 transition-colors hover:text-blue-500" href="#">
-            Terms
+            약관
           </Link>
           <Link className="text-slate-400 transition-colors hover:text-blue-500" href="#">
-            Support
+            고객지원
           </Link>
           <Link className="text-slate-400 transition-colors hover:text-blue-500" href="#">
-            About
+            소개
           </Link>
         </div>
 

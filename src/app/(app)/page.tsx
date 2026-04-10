@@ -11,17 +11,17 @@ import {
 
 const atelierChoices = [
   {
-    title: "Merino Wool Overcoat",
-    description: "Perfect for the 18°C breeze",
+    title: "메리노 울 오버코트",
+    description: "18도 바람에 알맞은 아우터",
     src: "/images/home-overcoat.svg",
-    alt: "Dummy overcoat placeholder image",
+    alt: "오버코트 예시 이미지",
     featured: true,
   },
   {
     title: "Raw Silk Atelier Shirt",
-    description: "Lightweight professional layering",
+    description: "가볍고 단정한 레이어링",
     src: "/images/home-shirt.svg",
-    alt: "Dummy silk shirt placeholder image",
+    alt: "실크 셔츠 예시 이미지",
     featured: false,
   },
 ];
@@ -29,9 +29,9 @@ const atelierChoices = [
 const valueProps = [
   {
     icon: Factory,
-    title: "Precision Styling",
+    title: "정교한 스타일링",
     description:
-      "Algorithmically selected outfits that respect both your personal taste and environmental factors.",
+      "취향과 날씨 조건을 함께 반영해 오늘 입기 좋은 조합을 고릅니다.",
     tone: "var(--primary-fixed)",
     color: "var(--primary)",
   },
@@ -39,15 +39,15 @@ const valueProps = [
     icon: Sparkles,
     title: "Digital Mirror",
     description:
-      "Visualize combinations before even stepping into your wardrobe. Save time, look better.",
+      "옷장 앞에서 고민하기 전에 어울리는 조합을 먼저 확인하세요.",
     tone: "rgb(0 250 226 / 0.2)",
     color: "var(--secondary)",
   },
   {
     icon: Leaf,
-    title: "Sustainable Choice",
+    title: "지속 가능한 선택",
     description:
-      "Rediscover forgotten pieces in your closet. Shop your own wardrobe and reduce fashion waste.",
+      "잊고 있던 옷을 다시 발견하고, 내 옷장 안에서 새로운 코디를 만듭니다.",
     tone: "rgb(115 255 111 / 0.2)",
     color: "var(--tertiary)",
   },
@@ -71,10 +71,10 @@ export default function Home() {
             className="text-5xl font-extrabold tracking-tighter text-[#191c1d]"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            Hello, Alex!
+            안녕하세요, Alex님!
           </h1>
           <p className="mt-2 text-lg font-light text-[#404753]">
-            Your digital atelier is ready for today&apos;s forecast.
+            오늘의 forecast에 맞춰 Digital Atelier가 준비되었습니다.
           </p>
         </header>
 
@@ -84,7 +84,7 @@ export default function Home() {
         >
           <div className="absolute inset-0 z-0">
             <Image
-              alt="Dummy walk-in closet background"
+              alt="옷장 배경 이미지"
               className="h-full w-full object-cover"
               fill
               priority
@@ -101,8 +101,7 @@ export default function Home() {
               Smart Outfit Recommendations
             </h2>
             <p className="mb-10 max-w-md text-xl text-[#404753]">
-              Based on weather and your schedule. Experience precision styling
-              tailored to your daily rhythm.
+              현재 날씨와 오늘의 일정을 바탕으로 내 옷장 속 아이템을 조합합니다.
             </p>
             <div className="flex flex-wrap gap-4">
               <button
@@ -151,10 +150,10 @@ export default function Home() {
               </div>
               <div>
                 <p className="text-lg font-semibold text-[#191c1d]">
-                  Partly Cloudy
+                  구름 조금
                 </p>
                 <p className="text-sm text-[#404753]">
-                  Light breeze, ideal for layering.
+                  가벼운 바람이 불어 레이어링하기 좋습니다.
                 </p>
               </div>
             </div>
@@ -173,18 +172,18 @@ export default function Home() {
                 <div className="flex items-start gap-4">
                   <div className="h-12 w-1.5 rounded-full bg-[var(--primary)]" />
                   <div>
-                    <p className="font-bold text-[#191c1d]">Client Meeting</p>
+                    <p className="font-bold text-[#191c1d]">고객 미팅</p>
                     <p className="text-sm text-[#404753]">
-                      10:00 AM • Design Studio
+                      오전 10:00 • 디자인 스튜디오
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <div className="h-12 w-1.5 rounded-full bg-[var(--tertiary-container)]" />
                   <div>
-                    <p className="font-bold text-[#191c1d]">Gallery Opening</p>
+                    <p className="font-bold text-[#191c1d]">갤러리 오프닝</p>
                     <p className="text-sm text-[#404753]">
-                      07:00 PM • Soho District
+                      오후 7:00 • 소호 지구
                     </p>
                   </div>
                 </div>
@@ -209,14 +208,14 @@ export default function Home() {
                     className="mt-2 text-3xl font-bold"
                     style={{ fontFamily: "var(--font-display)" }}
                   >
-                    The Atelier&apos;s Choice
+                    Atelier&apos;s Choice
                   </h3>
                 </div>
                 <Link
                   className="group flex items-center gap-2 font-bold text-[var(--primary)]"
                   href="/recommendations"
                 >
-                  View All
+                  모두 보기
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
               </div>
@@ -277,8 +276,7 @@ export default function Home() {
               The Art of Dressing
             </h2>
             <p className="text-[#404753]">
-              We merge artisanal curation with hyper-precise data to ensure you
-              never have a &apos;nothing to wear&apos; moment again.
+              세심한 큐레이션과 날씨 데이터를 결합해 매일의 코디 고민을 줄입니다.
             </p>
           </div>
 
