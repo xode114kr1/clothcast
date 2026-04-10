@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { AppHeader } from "@/components/app-header";
 
@@ -76,17 +77,17 @@ export default function WardrobePage() {
             </p>
           </div>
 
-          <button
+          <Link
             className="flex items-center gap-3 rounded-full px-11 py-4 text-lg font-bold shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl active:scale-95"
+            href="/wardrobe/new"
             style={{
               backgroundColor: "var(--primary-container)",
               color: "var(--on-primary-container, #002c51)",
             }}
-            type="button"
           >
             <Plus className="h-5 w-5" strokeWidth={2.4} />
             Add Clothing
-          </button>
+          </Link>
         </header>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

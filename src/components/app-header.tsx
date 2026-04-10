@@ -7,8 +7,8 @@ type AppHeaderProps = {
 };
 
 const navItems = [
-  { key: "home", label: "Home", href: "#" },
-  { key: "wardrobe", label: "Wardrobe", href: "#" },
+  { key: "home", label: "Home", href: "/" },
+  { key: "wardrobe", label: "Wardrobe", href: "/wardrobe" },
   { key: "recommendations", label: "Recommendations", href: "/recommendations" },
   { key: "profile", label: "Profile", href: "#" },
 ] as const;
