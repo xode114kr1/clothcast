@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope, Plus_Jakarta_Sans } from "next/font/google";
+import { Footer } from "@/components/footer";
 import "./globals.css";
 
 const displayFont = Manrope({
@@ -24,7 +25,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className={`${displayFont.variable} ${bodyFont.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }
