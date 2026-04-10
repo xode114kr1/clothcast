@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { Home, Shirt, Sparkles, User } from "lucide-react";
 
 const navItems = [
@@ -17,8 +18,15 @@ const navItems = [
   { key: "profile", label: "Profile", href: "/profile", icon: User },
 ] as const;
 
+const mockUser = {
+  name: "Alex",
+  avatarUrl:
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuCTnHQAJ8kxre13OPfnOgscWrd9qgaJupjzEvvverdzUdf38c8KbMfNPbMZVY1VjNDejzXDnsIR-hAHeAjjPcZNTWylqHS8TBLbRK4oxT3bi-jgzNewhAof9fe11vcmFuNs_LVY7c8LhFONoZJq1wWejRWy6RbAL2O_nNBfUCr062ncRaB6eBQzW78mngBUM2GnzpIaq7j40rNPaEC3xYNVf2-LR7s8rs6mPMWaU2cHUxr2m4qS-umHX4NHqJVTu7yl5hJHvyuz1Ns",
+};
+
 export function Header() {
   const pathname = usePathname();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const activeItem = navItems.find((item) => {
     if (item.href === "/") {
@@ -27,6 +35,10 @@ export function Header() {
 
     return pathname.startsWith(item.href);
   })?.key;
+
+  const handleMockLogin = () => {
+    setIsLoggedIn(true);
+  };
 
   return (
     <header
@@ -65,18 +77,29 @@ export function Header() {
         </nav>
 
         <div className="flex items-center">
-          <div
-            className="h-10 w-10 overflow-hidden rounded-full"
-            style={{ backgroundColor: "var(--surface-container-high)" }}
-          >
-            <Image
-              alt="사용자 프로필 아바타"
-              className="h-full w-full object-cover"
-              height={40}
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTnHQAJ8kxre13OPfnOgscWrd9qgaJupjzEvvverdzUdf38c8KbMfNPbMZVY1VjNDejzXDnsIR-hAHeAjjPcZNTWylqHS8TBLbRK4oxT3bi-jgzNewhAof9fe11vcmFuNs_LVY7c8LhFONoZJq1wWejRWy6RbAL2O_nNBfUCr062ncRaB6eBQzW78mngBUM2GnzpIaq7j40rNPaEC3xYNVf2-LR7s8rs6mPMWaU2cHUxr2m4qS-umHX4NHqJVTu7yl5hJHvyuz1Ns"
-              width={40}
-            />
-          </div>
+          {isLoggedIn ? (
+            <div
+              className="h-10 w-10 overflow-hidden rounded-full"
+              style={{ backgroundColor: "var(--surface-container-high)" }}
+            >
+              <Image
+                alt={`${mockUser.name} 프로필 아바타`}
+                className="h-full w-full object-cover"
+                height={40}
+                src={mockUser.avatarUrl}
+                width={40}
+              />
+            </div>
+          ) : (
+            <button
+              className="h-10 rounded-full px-5 text-sm font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
+              onClick={handleMockLogin}
+              style={{ background: "var(--gradient-hero)" }}
+              type="button"
+            >
+              Login
+            </button>
+          )}
         </div>
       </div>
     </header>
