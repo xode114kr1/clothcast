@@ -3,7 +3,6 @@ import {
   CirclePlus,
   ImageUp,
 } from "lucide-react";
-import { AppHeader } from "@/components/app-header";
 
 const categories = ["TOP", "OUTER", "PANTS", "SHOES"] as const;
 const palette = [
@@ -22,8 +21,6 @@ const styleTags = [
 export default function NewWardrobeItemPage() {
   return (
     <>
-      <AppHeader active="wardrobe" />
-
       <main className="min-h-screen px-6 pb-24 pt-12">
         <div className="mx-auto max-w-4xl">
           <div className="mb-12">

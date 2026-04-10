@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Plus, Pencil, Trash2 } from "lucide-react";
-import { AppHeader } from "@/components/app-header";
 
 const wardrobeItems = [
   {
@@ -57,8 +56,6 @@ const wardrobeItems = [
 export default function WardrobePage() {
   return (
     <>
-      <AppHeader active="wardrobe" />
-
       <main className="mx-auto max-w-7xl px-8 py-12">
         <header className="mb-16 flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div className="space-y-2">

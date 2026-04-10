@@ -8,7 +8,6 @@ import {
   Factory,
   Heart,
 } from "lucide-react";
-import { AppHeader } from "@/components/app-header";
 
 const atelierChoices = [
   {
@@ -57,8 +56,6 @@ const valueProps = [
 export default function Home() {
   return (
     <>
-      <AppHeader active="home" />
-
       <main className="mx-auto max-w-7xl px-8 pb-24 pt-12">
         <header className="mb-16">
           <div

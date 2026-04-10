@@ -1,19 +1,28 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Bell, Settings } from "lucide-react";
-
-type AppHeaderProps = {
-  active?: "home" | "wardrobe" | "recommendations" | "profile";
-};
 
 const navItems = [
   { key: "home", label: "Home", href: "/" },
   { key: "wardrobe", label: "Wardrobe", href: "/wardrobe" },
   { key: "recommendations", label: "Recommendations", href: "/recommendations" },
-  { key: "profile", label: "Profile", href: "#" },
+  { key: "profile", label: "Profile", href: "/profile" },
 ] as const;
 
-export function AppHeader({ active = "recommendations" }: AppHeaderProps) {
+export function Header() {
+  const pathname = usePathname();
+
+  const activeItem = navItems.find((item) => {
+    if (item.href === "/") {
+      return pathname === "/";
+    }
+
+    return pathname.startsWith(item.href);
+  })?.key;
+
   return (
     <header
       className="sticky top-0 z-50 w-full shadow-sm backdrop-blur-xl"
@@ -29,7 +38,7 @@ export function AppHeader({ active = "recommendations" }: AppHeaderProps) {
 
         <nav className="hidden items-center space-x-8 md:flex">
           {navItems.map((item) => {
-            const isActive = item.key === active;
+            const isActive = item.key === activeItem;
 
             return (
               <Link

@@ -8,7 +8,6 @@ import {
   Sparkles,
   SunMedium,
 } from "lucide-react";
-import { AppHeader } from "@/components/app-header";
 
 const recommendationItems = [
   {
@@ -28,8 +27,6 @@ const recommendationItems = [
 export default function RecommendationsPage() {
   return (
     <>
-      <AppHeader active="recommendations" />
-
       <main className="mx-auto max-w-7xl px-8 py-12">
         <section className="mb-24 grid grid-cols-1 items-end gap-8 lg:grid-cols-12">
           <div className="lg:col-span-7">
