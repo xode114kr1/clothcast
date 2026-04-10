@@ -3,13 +3,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Settings } from "lucide-react";
+import { Home, Shirt, Sparkles, User } from "lucide-react";
 
 const navItems = [
-  { key: "home", label: "Home", href: "/" },
-  { key: "wardrobe", label: "Wardrobe", href: "/wardrobe" },
-  { key: "recommendations", label: "recommendation", href: "/recommendations" },
-  { key: "profile", label: "Profile", href: "/profile" },
+  { key: "home", label: "Home", href: "/", icon: Home },
+  { key: "wardrobe", label: "Wardrobe", href: "/wardrobe", icon: Shirt },
+  {
+    key: "recommendations",
+    label: "Recommendation",
+    href: "/recommendations",
+    icon: Sparkles,
+  },
+  { key: "profile", label: "Profile", href: "/profile", icon: User },
 ] as const;
 
 export function Header() {
@@ -36,39 +41,30 @@ export function Header() {
           ClothCast
         </div>
 
-        <nav className="hidden items-center space-x-8 md:flex">
+        <nav className="flex items-center gap-2 md:gap-3">
           {navItems.map((item) => {
             const isActive = item.key === activeItem;
+            const Icon = item.icon;
 
             return (
               <Link
                 key={item.key}
+                aria-label={item.label}
                 className={
                   isActive
-                    ? "border-b-2 border-blue-700 pb-1 font-bold text-blue-700"
-                    : "text-slate-500 transition-colors hover:text-blue-600"
+                    ? "flex h-10 items-center gap-2 rounded-full bg-[rgb(211_228_255_/_0.45)] px-3 font-semibold text-blue-700 transition-colors md:px-4"
+                    : "flex h-10 items-center gap-2 rounded-full px-3 font-semibold text-slate-500 transition-colors hover:bg-[rgb(211_228_255_/_0.2)] hover:text-blue-600 md:px-4"
                 }
                 href={item.href}
               >
-                {item.label}
+                <Icon className="h-5 w-5 shrink-0" strokeWidth={2} />
+                <span className="hidden lg:inline">{item.label}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="flex items-center space-x-5">
-          <button
-            className="flex items-center text-[#404753] transition-all hover:opacity-80"
-            type="button"
-          >
-            <Bell className="h-5 w-5" strokeWidth={1.9} />
-          </button>
-          <button
-            className="flex items-center text-[#404753] transition-all hover:opacity-80"
-            type="button"
-          >
-            <Settings className="h-5 w-5" strokeWidth={1.9} />
-          </button>
+        <div className="flex items-center">
           <div
             className="h-10 w-10 overflow-hidden rounded-full"
             style={{ backgroundColor: "var(--surface-container-high)" }}
