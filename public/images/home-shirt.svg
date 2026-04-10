@@ -1,0 +1,13 @@
+<svg width="768" height="960" viewBox="0 0 768 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="768" height="960" fill="#EDEEEF"/>
+  <rect x="120" y="88" width="528" height="784" rx="44" fill="#FFFFFF"/>
+  <path d="M286 166L384 122L482 166L560 314V780H208V314L286 166Z" fill="#F7F8FA"/>
+  <path d="M356 226H412V780H356V226Z" fill="#E1E3E4"/>
+  <path d="M208 314L140 466L208 506V780H120V494L198 290L208 314Z" fill="#F0F2F5"/>
+  <path d="M560 314L628 466L560 506V780H648V494L570 290L560 314Z" fill="#F0F2F5"/>
+  <path d="M330 188L384 154L438 188L384 252L330 188Z" fill="#D9DADB"/>
+  <circle cx="384" cy="344" r="8" fill="#0060A8"/>
+  <circle cx="384" cy="404" r="8" fill="#0060A8"/>
+  <circle cx="384" cy="464" r="8" fill="#0060A8"/>
+  <text x="384" y="846" text-anchor="middle" fill="#0060A8" font-family="Arial, sans-serif" font-size="30" font-weight="700">Dummy Shirt</text>
+</svg>

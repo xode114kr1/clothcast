@@ -1,0 +1,12 @@
+<svg width="768" height="960" viewBox="0 0 768 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="768" height="960" fill="#F3F4F5"/>
+  <rect x="120" y="88" width="528" height="784" rx="44" fill="#FFFFFF"/>
+  <path d="M302 182L384 134L466 182L528 334V772H240V334L302 182Z" fill="#404753"/>
+  <path d="M348 256H420V772H348V256Z" fill="#2E3132"/>
+  <path d="M240 334L176 478L240 520V772H120V498L202 308L240 334Z" fill="#5F6B78"/>
+  <path d="M528 334L592 478L528 520V772H648V498L566 308L528 334Z" fill="#5F6B78"/>
+  <circle cx="384" cy="336" r="10" fill="#D3E4FF"/>
+  <circle cx="384" cy="404" r="10" fill="#D3E4FF"/>
+  <circle cx="384" cy="472" r="10" fill="#D3E4FF"/>
+  <text x="384" y="846" text-anchor="middle" fill="#0060A8" font-family="Arial, sans-serif" font-size="30" font-weight="700">Dummy Overcoat</text>
+</svg>

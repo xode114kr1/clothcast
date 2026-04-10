@@ -1,0 +1,10 @@
+<svg width="720" height="960" viewBox="0 0 720 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="720" height="960" fill="#F8F9FA"/>
+  <rect x="84" y="72" width="552" height="816" rx="40" fill="#FFFFFF"/>
+  <path d="M250 176H470L506 338L446 790H366L360 450L354 790H274L214 338L250 176Z" fill="#F4EFE6"/>
+  <path d="M334 176H386V790H334V176Z" fill="#E5DDCF"/>
+  <path d="M250 176L214 338L176 330L214 162L250 176Z" fill="#E5DDCF"/>
+  <path d="M470 176L506 338L544 330L506 162L470 176Z" fill="#E5DDCF"/>
+  <path d="M278 260H442" stroke="#D6CCBC" stroke-width="6" stroke-dasharray="10 10"/>
+  <text x="360" y="838" text-anchor="middle" fill="#0060A8" font-family="Arial, sans-serif" font-size="28" font-weight="700">Dummy Linen Trousers</text>
+</svg>
