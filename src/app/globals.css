@@ -50,9 +50,9 @@
 
   /* Typography */
   --font-display:
-    "Manrope", "Pretendard", "Plus Jakarta Sans", "Noto Sans KR", sans-serif;
+    var(--font-display-family), "Pretendard", "Plus Jakarta Sans", "Noto Sans KR", sans-serif;
   --font-body:
-    "Plus Jakarta Sans", "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+    var(--font-body-family), "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
   --display-lg-size: clamp(3rem, 6vw, 3.5rem);
   --display-sm-size: clamp(2rem, 4vw, 2.25rem);
   --title-md-size: 1.125rem;

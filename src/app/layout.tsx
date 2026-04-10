@@ -1,5 +1,16 @@
 import type { Metadata } from "next";
+import { Manrope, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+
+const displayFont = Manrope({
+  subsets: ["latin"],
+  variable: "--font-display-family",
+});
+
+const bodyFont = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-body-family",
+});
 
 export const metadata: Metadata = {
   title: "ClothCast",
@@ -12,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
+    <html lang="ko" className={`${displayFont.variable} ${bodyFont.variable}`}>
       <body>{children}</body>
     </html>
   );
