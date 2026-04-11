@@ -2,17 +2,20 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
-  Cloud,
   Leaf,
   Sparkles,
   Factory,
   Heart,
 } from "lucide-react";
 
+import { HomeWeatherCard } from "@/components/home/home-weather-card";
+import { WeatherAwareChoiceDescription } from "@/components/home/weather-aware-choice-description";
+import { CurrentWeatherProvider } from "@/components/recommendations/current-weather-provider";
+
 const atelierChoices = [
   {
     title: "메리노 울 오버코트",
-    description: "18도 바람에 알맞은 아우터",
+    description: "현재 날씨에 맞춰 알맞은 아우터",
     src: "/images/home-overcoat.svg",
     alt: "오버코트 예시 이미지",
     featured: true,
@@ -56,7 +59,8 @@ const valueProps = [
 export default function Home() {
   return (
     <>
-      <main className="mx-auto max-w-7xl px-8 pb-24 pt-12">
+      <CurrentWeatherProvider>
+        <main className="mx-auto max-w-7xl px-8 pb-24 pt-12">
         <header className="mb-16">
           <div
             className="mb-4 inline-block rounded-full px-4 py-1.5 text-xs font-bold tracking-widest"
@@ -130,33 +134,7 @@ export default function Home() {
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
           <div className="md:col-span-4">
-            <div
-              className="flex h-full min-h-80 flex-col justify-between rounded-[var(--radius-xl)] p-8"
-              style={{ backgroundColor: "var(--surface-container-low)" }}
-            >
-              <div>
-                <span className="text-xs font-bold tracking-widest text-[#404753]">
-                  LOCAL FORECAST
-                </span>
-                <div className="mt-6 flex items-center gap-4">
-                  <Cloud className="h-16 w-16 text-[var(--primary)]" strokeWidth={1.6} />
-                  <span
-                    className="text-5xl font-bold"
-                    style={{ fontFamily: "var(--font-display)" }}
-                  >
-                    18°C
-                  </span>
-                </div>
-              </div>
-              <div>
-                <p className="text-lg font-semibold text-[#191c1d]">
-                  구름 조금
-                </p>
-                <p className="text-sm text-[#404753]">
-                  가벼운 바람이 불어 레이어링하기 좋습니다.
-                </p>
-              </div>
-            </div>
+            <HomeWeatherCard />
           </div>
 
           <div className="md:col-span-8">
@@ -222,7 +200,11 @@ export default function Home() {
                         {item.title}
                       </h4>
                       <p className="mt-1 text-sm text-[#404753]">
-                        {item.description}
+                        {item.featured ? (
+                          <WeatherAwareChoiceDescription />
+                        ) : (
+                          item.description
+                        )}
                       </p>
                     </div>
                   </div>
@@ -274,7 +256,8 @@ export default function Home() {
             })}
           </div>
         </section>
-      </main>
+        </main>
+      </CurrentWeatherProvider>
     </>
   );
 }

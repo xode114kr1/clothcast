@@ -3,11 +3,13 @@ import {
   Brain,
   BriefcaseBusiness,
   CheckCircle2,
-  MapPin,
   Snowflake,
   Sparkles,
-  SunMedium,
 } from "lucide-react";
+
+import { CurrentWeatherCard } from "@/components/recommendations/current-weather-card";
+import { CurrentWeatherProvider } from "@/components/recommendations/current-weather-provider";
+import { WeatherSelectionSummary } from "@/components/recommendations/weather-selection-summary";
 
 const recommendationItems = [
   {
@@ -27,7 +29,8 @@ const recommendationItems = [
 export default function RecommendationsPage() {
   return (
     <>
-      <main className="mx-auto max-w-7xl px-8 py-12">
+      <CurrentWeatherProvider>
+        <main className="mx-auto max-w-7xl px-8 py-12">
         <section className="mb-24 grid grid-cols-1 items-end gap-8 lg:grid-cols-12">
           <div className="lg:col-span-7">
             <h1
@@ -42,30 +45,7 @@ export default function RecommendationsPage() {
           </div>
 
           <div className="lg:col-span-5">
-            <div
-              className="flex items-center justify-between rounded-[var(--radius-xl)] p-8 shadow-sm"
-              style={{ backgroundColor: "var(--surface-container-lowest)" }}
-            >
-              <div>
-                <div className="mb-1 flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-[var(--primary)]" strokeWidth={2} />
-                  <span className="text-xs font-bold uppercase tracking-[0.05em] text-[#404753]">
-                    소호 지구
-                  </span>
-                </div>
-                <div
-                  className="text-6xl font-extrabold text-[#191c1d]"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  18°C
-                </div>
-                <div className="mt-1 font-medium text-[#404753]">구름 조금</div>
-              </div>
-
-              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[rgb(211_228_255_/_0.3)]">
-                <SunMedium className="h-12 w-12 scale-[2.1] text-[var(--primary)]" strokeWidth={1.8} />
-              </div>
-            </div>
+            <CurrentWeatherCard />
           </div>
         </section>
 
@@ -199,10 +179,7 @@ export default function RecommendationsPage() {
                 </div>
 
                 <div className="space-y-6 leading-relaxed text-[#404753]">
-                  <p>
-                    <span className="font-bold text-[#191c1d]">18°C</span>의 날씨와
-                    습도 45% 조건에서 격식 있는 일정에 맞춘 조합입니다.
-                  </p>
+                  <WeatherSelectionSummary />
 
                   <div className="rounded-[var(--radius-md)] bg-white p-6 shadow-sm">
                     <p className="italic">
@@ -232,7 +209,8 @@ export default function RecommendationsPage() {
             </div>
           </div>
         </section>
-      </main>
+        </main>
+      </CurrentWeatherProvider>
     </>
   );
 }
