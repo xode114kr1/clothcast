@@ -1,4 +1,24 @@
 services:
+  db:
+    container_name: clothcast-db
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-clothcast}
+      POSTGRES_USER: ${POSTGRES_USER:-clothcast}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-clothcast_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
   app:
     container_name: clothcast-app
     build:
@@ -9,8 +29,14 @@ services:
       - .env.production
     ports:
       - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - app-network
+
+volumes:
+  postgres-data:
 
 networks:
   app-network:
