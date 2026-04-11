@@ -8,6 +8,8 @@ import {
 } from "lucide-react";
 
 import { CurrentWeatherCard } from "@/components/recommendations/current-weather-card";
+import { CurrentWeatherProvider } from "@/components/recommendations/current-weather-provider";
+import { WeatherSelectionSummary } from "@/components/recommendations/weather-selection-summary";
 
 const recommendationItems = [
   {
@@ -27,7 +29,8 @@ const recommendationItems = [
 export default function RecommendationsPage() {
   return (
     <>
-      <main className="mx-auto max-w-7xl px-8 py-12">
+      <CurrentWeatherProvider>
+        <main className="mx-auto max-w-7xl px-8 py-12">
         <section className="mb-24 grid grid-cols-1 items-end gap-8 lg:grid-cols-12">
           <div className="lg:col-span-7">
             <h1
@@ -176,10 +179,7 @@ export default function RecommendationsPage() {
                 </div>
 
                 <div className="space-y-6 leading-relaxed text-[#404753]">
-                  <p>
-                    <span className="font-bold text-[#191c1d]">18°C</span>의 날씨와
-                    습도 45% 조건에서 격식 있는 일정에 맞춘 조합입니다.
-                  </p>
+                  <WeatherSelectionSummary />
 
                   <div className="rounded-[var(--radius-md)] bg-white p-6 shadow-sm">
                     <p className="italic">
@@ -209,7 +209,8 @@ export default function RecommendationsPage() {
             </div>
           </div>
         </section>
-      </main>
+        </main>
+      </CurrentWeatherProvider>
     </>
   );
 }
