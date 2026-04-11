@@ -146,7 +146,7 @@ export function HeaderClient({ user }: HeaderClientProps) {
             <Link
               className="flex h-10 items-center rounded-full px-5 text-sm font-semibold text-white transition-opacity hover:opacity-90 active:scale-95"
               href="/login"
-              style={{ background: "var(--gradient-hero)" }}
+              style={{ background: "var(--gradient-hero)", color: "#ffffff" }}
             >
               Login
             </Link>

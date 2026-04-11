@@ -77,20 +77,27 @@ export function SignupForm() {
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="space-y-2">
           <label
-            className="ml-1 block text-xs font-bold uppercase tracking-[0.05em] text-[var(--muted-foreground)]"
+            className="ml-1 block text-sm font-semibold"
             htmlFor="nickname"
+            style={{
+              color: "#404753",
+              fontFamily: "var(--font-body)",
+            }}
           >
             닉네임
           </label>
-          <div className="group relative">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5 text-[color:var(--muted-foreground)] transition-colors group-focus-within:text-[var(--primary)]">
+          <div className="relative">
+            <span
+              className="absolute left-4 top-1/2 -translate-y-1/2"
+              style={{ color: "#707884" }}
+            >
               <User className="h-5 w-5" strokeWidth={1.75} />
-            </div>
+            </span>
             <input
               aria-describedby={hasError ? errorId : undefined}
               aria-invalid={hasError}
               autoComplete="nickname"
-              className="w-full rounded-[var(--radius-md)] border-none py-4 pl-12 pr-4 outline-none transition-all duration-300"
+              className="w-full rounded-[var(--radius-md)] border-none py-4 pl-12 pr-4 transition-all outline-none placeholder:text-[rgb(112_120_132_/_0.5)] focus:ring-0"
               disabled={isSubmitting}
               id="nickname"
               name="nickname"
@@ -98,7 +105,8 @@ export function SignupForm() {
               required
               style={{
                 backgroundColor: "var(--surface-container-highest)",
-                color: "var(--foreground)",
+                color: "#191c1d",
+                boxShadow: "0 0 0 0 rgba(0, 96, 168, 0)",
               }}
               type="text"
             />
@@ -107,20 +115,27 @@ export function SignupForm() {
 
         <div className="space-y-2">
           <label
-            className="ml-1 block text-xs font-bold uppercase tracking-[0.05em] text-[var(--muted-foreground)]"
+            className="ml-1 block text-sm font-semibold"
             htmlFor="email"
+            style={{
+              color: "#404753",
+              fontFamily: "var(--font-body)",
+            }}
           >
             이메일
           </label>
-          <div className="group relative">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5 text-[color:var(--muted-foreground)] transition-colors group-focus-within:text-[var(--primary)]">
+          <div className="relative">
+            <span
+              className="absolute left-4 top-1/2 -translate-y-1/2"
+              style={{ color: "#707884" }}
+            >
               <Mail className="h-5 w-5" strokeWidth={1.75} />
-            </div>
+            </span>
             <input
               aria-describedby={hasError ? errorId : undefined}
               aria-invalid={hasError}
               autoComplete="email"
-              className="w-full rounded-[var(--radius-md)] border-none py-4 pl-12 pr-4 outline-none transition-all duration-300"
+              className="w-full rounded-[var(--radius-md)] border-none py-4 pl-12 pr-4 transition-all outline-none placeholder:text-[rgb(112_120_132_/_0.5)] focus:ring-0"
               disabled={isSubmitting}
               id="email"
               name="email"
@@ -128,7 +143,8 @@ export function SignupForm() {
               required
               style={{
                 backgroundColor: "var(--surface-container-highest)",
-                color: "var(--foreground)",
+                color: "#191c1d",
+                boxShadow: "0 0 0 0 rgba(0, 96, 168, 0)",
               }}
               type="email"
             />
@@ -137,20 +153,27 @@ export function SignupForm() {
 
         <div className="space-y-2">
           <label
-            className="ml-1 block text-xs font-bold uppercase tracking-[0.05em] text-[var(--muted-foreground)]"
+            className="ml-1 block text-sm font-semibold"
             htmlFor="password"
+            style={{
+              color: "#404753",
+              fontFamily: "var(--font-body)",
+            }}
           >
             비밀번호
           </label>
-          <div className="group relative">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5 text-[color:var(--muted-foreground)] transition-colors group-focus-within:text-[var(--primary)]">
+          <div className="relative">
+            <span
+              className="absolute left-4 top-1/2 -translate-y-1/2"
+              style={{ color: "#707884" }}
+            >
               <Lock className="h-5 w-5" strokeWidth={1.75} />
-            </div>
+            </span>
             <input
               aria-describedby={hasError ? errorId : undefined}
               aria-invalid={hasError}
               autoComplete="new-password"
-              className="w-full rounded-[var(--radius-md)] border-none py-4 pl-12 pr-4 outline-none transition-all duration-300"
+              className="w-full rounded-[var(--radius-md)] border-none py-4 pl-12 pr-4 transition-all outline-none placeholder:text-[rgb(112_120_132_/_0.5)] focus:ring-0"
               disabled={isSubmitting}
               id="password"
               minLength={8}
@@ -159,7 +182,8 @@ export function SignupForm() {
               required
               style={{
                 backgroundColor: "var(--surface-container-highest)",
-                color: "var(--foreground)",
+                color: "#191c1d",
+                boxShadow: "0 0 0 0 rgba(0, 96, 168, 0)",
               }}
               type="password"
             />
@@ -208,26 +232,24 @@ export function SignupForm() {
         </p>
 
         <button
-          className="group mt-4 flex w-full items-center justify-center gap-2 rounded-full px-8 py-4 font-bold text-white transition-all duration-150 hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70 disabled:active:scale-100"
+          className="flex w-full items-center justify-center gap-3 rounded-full px-8 py-4 text-lg font-bold text-white shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl active:scale-95 disabled:cursor-not-allowed disabled:opacity-70 disabled:active:scale-100"
           disabled={isSubmitting}
           style={{
             background: "var(--gradient-hero)",
-            boxShadow: "0 24px 40px -20px rgb(0 96 168 / 0.35)",
+            fontFamily: "var(--font-display)",
           }}
           type="submit"
         >
           {isSubmitting ? "가입 중..." : "회원가입"}
-          <span className="transition-transform group-hover:translate-x-1">
-            <ArrowRight className="h-5 w-5" strokeWidth={1.75} />
-          </span>
+          <ArrowRight className="h-6 w-6" strokeWidth={1.75} />
         </button>
       </form>
 
-      <div className="mt-10 pt-8 text-center">
-        <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
+      <div className="mt-10 text-center">
+        <p className="text-sm text-[#404753]">
           이미 계정이 있나요?
           <Link
-            className="ml-1 font-bold transition-colors"
+            className="ml-1 font-bold transition-opacity hover:opacity-70"
             href="/login"
             style={{ color: "var(--primary)" }}
           >
