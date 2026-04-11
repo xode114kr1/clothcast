@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import type { FormEvent } from "react";
+import { useState } from "react";
 import { AlertTriangle, ArrowRight, Lock, Mail, User } from "lucide-react";
 
 type SignupApiResponse = {
@@ -28,9 +29,16 @@ export function SignupForm() {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const errorId = "signup-error-message";
+  const hasError = Boolean(errorMessage);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
+
     setErrorMessage("");
     setIsSubmitting(true);
 
@@ -79,6 +87,8 @@ export function SignupForm() {
               <User className="h-5 w-5" strokeWidth={1.75} />
             </div>
             <input
+              aria-describedby={hasError ? errorId : undefined}
+              aria-invalid={hasError}
               autoComplete="nickname"
               className="w-full rounded-[var(--radius-md)] border-none py-4 pl-12 pr-4 outline-none transition-all duration-300"
               disabled={isSubmitting}
@@ -107,6 +117,8 @@ export function SignupForm() {
               <Mail className="h-5 w-5" strokeWidth={1.75} />
             </div>
             <input
+              aria-describedby={hasError ? errorId : undefined}
+              aria-invalid={hasError}
               autoComplete="email"
               className="w-full rounded-[var(--radius-md)] border-none py-4 pl-12 pr-4 outline-none transition-all duration-300"
               disabled={isSubmitting}
@@ -135,6 +147,8 @@ export function SignupForm() {
               <Lock className="h-5 w-5" strokeWidth={1.75} />
             </div>
             <input
+              aria-describedby={hasError ? errorId : undefined}
+              aria-invalid={hasError}
               autoComplete="new-password"
               className="w-full rounded-[var(--radius-md)] border-none py-4 pl-12 pr-4 outline-none transition-all duration-300"
               disabled={isSubmitting}
@@ -152,9 +166,10 @@ export function SignupForm() {
           </div>
         </div>
 
-        {errorMessage ? (
+        {hasError ? (
           <div
             className="flex items-center gap-2 rounded-[1rem] px-4 py-3"
+            id={errorId}
             role="alert"
             style={{
               backgroundColor: "rgb(255 218 214 / 0.3)",
