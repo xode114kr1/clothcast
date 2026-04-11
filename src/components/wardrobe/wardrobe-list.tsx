@@ -220,13 +220,13 @@ export function WardrobeList() {
             </div>
 
             <div className="absolute right-4 top-4 flex translate-y-4 gap-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-              <button
+              <Link
                 className="rounded-full bg-[rgb(255_255_255_/_0.9)] p-2 text-[var(--foreground)] shadow-sm backdrop-blur transition-colors hover:text-[var(--primary)]"
+                href={`/wardrobe/${item.id}/edit`}
                 title="의류 수정"
-                type="button"
               >
                 <Pencil className="h-4 w-4" strokeWidth={2} />
-              </button>
+              </Link>
               <button
                 className="rounded-full bg-[rgb(255_255_255_/_0.9)] p-2 text-[var(--error,#ba1a1a)] shadow-sm backdrop-blur transition-transform hover:scale-110 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
                 disabled={deletingId === item.id}
