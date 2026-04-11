@@ -28,6 +28,23 @@ export type CreateClothesValidationResult =
       code: ClothesValidationCode;
     };
 
+export type ListClothesFilters = {
+  category?: ClothingCategoryValue;
+  fit?: ClothingFitValue;
+  formality?: number;
+};
+
+export type ListClothesValidationResult =
+  | {
+      success: true;
+      data: ListClothesFilters;
+    }
+  | {
+      success: false;
+      message: string;
+      code: ClothesValidationCode;
+    };
+
 // 알 수 없는 JSON 값이 객체 형태인지 확인한다.
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -60,7 +77,7 @@ function normalizeOptionalString(value: unknown) {
 }
 
 // 요청 값이 DB에서 허용하는 의류 카테고리 enum인지 검사한다.
-function isClothingCategory(value: unknown): value is ClothingCategoryValue {
+export function isClothingCategory(value: unknown): value is ClothingCategoryValue {
   return (
     typeof value === "string" &&
     Object.values(ClothingCategory).includes(value as ClothingCategoryValue)
@@ -68,7 +85,7 @@ function isClothingCategory(value: unknown): value is ClothingCategoryValue {
 }
 
 // 요청 값이 DB에서 허용하는 핏 enum인지 검사한다.
-function isClothingFit(value: unknown): value is ClothingFitValue {
+export function isClothingFit(value: unknown): value is ClothingFitValue {
   return (
     typeof value === "string" &&
     Object.values(ClothingFit).includes(value as ClothingFitValue)
@@ -161,5 +178,62 @@ export function validateCreateClothesInput(
       pattern,
       imageUrl,
     },
+  };
+}
+
+// 옷 목록 조회 query string이 허용된 필터 값으로 구성되어 있는지 검사한다.
+export function validateListClothesQuery(
+  searchParams: URLSearchParams,
+): ListClothesValidationResult {
+  const category = searchParams.get("category");
+  const fit = searchParams.get("fit");
+  const formality = searchParams.get("formality");
+  const filters: ListClothesFilters = {};
+
+  if (category) {
+    if (!isClothingCategory(category)) {
+      return {
+        success: false,
+        message: "올바른 카테고리를 선택해주세요.",
+        code: "INVALID_REQUEST",
+      };
+    }
+
+    filters.category = category;
+  }
+
+  if (fit) {
+    if (!isClothingFit(fit)) {
+      return {
+        success: false,
+        message: "올바른 핏을 선택해주세요.",
+        code: "INVALID_REQUEST",
+      };
+    }
+
+    filters.fit = fit;
+  }
+
+  if (formality) {
+    const formalityNumber = Number(formality);
+
+    if (
+      !Number.isInteger(formalityNumber) ||
+      formalityNumber < 1 ||
+      formalityNumber > 5
+    ) {
+      return {
+        success: false,
+        message: "포멀함 점수는 1~5 사이의 정수여야 합니다.",
+        code: "INVALID_REQUEST",
+      };
+    }
+
+    filters.formality = formalityNumber;
+  }
+
+  return {
+    success: true,
+    data: filters,
   };
 }
