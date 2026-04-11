@@ -3,7 +3,8 @@ import type {
   OpenWeatherCurrentResponse,
 } from "@/lib/weather/weather-types";
 
-const OPENWEATHER_CURRENT_URL = "https://api.openweathermap.org/data/2.5/weather";
+const OPENWEATHER_CURRENT_URL =
+  "https://api.openweathermap.org/data/2.5/weather";
 
 // OpenWeather 연동에 필요한 서버 환경 변수를 읽고 누락 시 즉시 실패시킨다.
 function getRequiredEnv(name: string) {
@@ -16,13 +17,7 @@ function getRequiredEnv(name: string) {
   return value;
 }
 
-function buildCurrentWeatherUrl({
-  lat,
-  lon,
-}: {
-  lat: number;
-  lon: number;
-}) {
+function buildCurrentWeatherUrl({ lat, lon }: { lat: number; lon: number }) {
   const url = new URL(OPENWEATHER_CURRENT_URL);
 
   url.searchParams.set("lat", String(lat));
@@ -62,7 +57,9 @@ export async function fetchCurrentWeather({
   });
 
   if (!response.ok) {
-    throw new Error(`OpenWeather request failed with status ${response.status}.`);
+    throw new Error(
+      `OpenWeather request failed with status ${response.status}.`,
+    );
   }
 
   const data = (await response.json()) as OpenWeatherCurrentResponse;

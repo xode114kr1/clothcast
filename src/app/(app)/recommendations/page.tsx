@@ -3,11 +3,11 @@ import {
   Brain,
   BriefcaseBusiness,
   CheckCircle2,
-  MapPin,
   Snowflake,
   Sparkles,
-  SunMedium,
 } from "lucide-react";
+
+import { CurrentWeatherCard } from "@/components/recommendations/current-weather-card";
 
 const recommendationItems = [
   {
@@ -42,30 +42,7 @@ export default function RecommendationsPage() {
           </div>
 
           <div className="lg:col-span-5">
-            <div
-              className="flex items-center justify-between rounded-[var(--radius-xl)] p-8 shadow-sm"
-              style={{ backgroundColor: "var(--surface-container-lowest)" }}
-            >
-              <div>
-                <div className="mb-1 flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-[var(--primary)]" strokeWidth={2} />
-                  <span className="text-xs font-bold uppercase tracking-[0.05em] text-[#404753]">
-                    소호 지구
-                  </span>
-                </div>
-                <div
-                  className="text-6xl font-extrabold text-[#191c1d]"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  18°C
-                </div>
-                <div className="mt-1 font-medium text-[#404753]">구름 조금</div>
-              </div>
-
-              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[rgb(211_228_255_/_0.3)]">
-                <SunMedium className="h-12 w-12 scale-[2.1] text-[var(--primary)]" strokeWidth={1.8} />
-              </div>
-            </div>
+            <CurrentWeatherCard />
           </div>
         </section>
 
