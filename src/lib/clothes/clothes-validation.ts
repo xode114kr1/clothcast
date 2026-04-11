@@ -45,6 +45,19 @@ export type ListClothesValidationResult =
       code: ClothesValidationCode;
     };
 
+export type ClothesIdValidationResult =
+  | {
+      success: true;
+      data: {
+        id: number;
+      };
+    }
+  | {
+      success: false;
+      message: string;
+      code: ClothesValidationCode;
+    };
+
 // 알 수 없는 JSON 값이 객체 형태인지 확인한다.
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -235,5 +248,25 @@ export function validateListClothesQuery(
   return {
     success: true,
     data: filters,
+  };
+}
+
+// route param으로 받은 의류 ID가 양의 정수인지 검사한다.
+export function validateClothesIdParam(id: string): ClothesIdValidationResult {
+  const clothesId = Number(id);
+
+  if (!Number.isInteger(clothesId) || clothesId <= 0) {
+    return {
+      success: false,
+      message: "올바른 의류 ID가 필요합니다.",
+      code: "INVALID_REQUEST",
+    };
+  }
+
+  return {
+    success: true,
+    data: {
+      id: clothesId,
+    },
   };
 }
