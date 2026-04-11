@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import {
   ArrowRight,
   Leaf,
@@ -11,6 +12,8 @@ import {
 import { HomeWeatherCard } from "@/components/home/home-weather-card";
 import { WeatherAwareChoiceDescription } from "@/components/home/weather-aware-choice-description";
 import { CurrentWeatherProvider } from "@/components/recommendations/current-weather-provider";
+import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
+import { prisma } from "@/lib/prisma";
 
 const atelierChoices = [
   {
@@ -56,7 +59,40 @@ const valueProps = [
   },
 ];
 
-export default function Home() {
+async function getHomeUser() {
+  const cookieStore = await cookies();
+  const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+
+  if (!sessionToken) {
+    return null;
+  }
+
+  const session = await verifySessionToken(sessionToken);
+
+  if (!session) {
+    return null;
+  }
+
+  try {
+    return await prisma.user.findUnique({
+      where: { id: session.userId },
+      select: {
+        nickname: true,
+      },
+    });
+  } catch {
+    return null;
+  }
+}
+
+export default async function Home() {
+  const user = await getHomeUser();
+  const heroEyebrow = user ? "TODAY'S CLOTHCAST" : "CLOTHCAST";
+  const greeting = user ? `${user.nickname}님, 오늘 입을 옷을 골라볼까요?` : "날씨와 일정에 맞는 코디를 더 쉽게 고르세요";
+  const intro = user
+    ? "현재 날씨와 오늘의 일정을 함께 보고, 내 옷장 속 아이템으로 어울리는 조합을 준비합니다."
+    : "옷장을 등록하면 ClothCast가 현재 날씨와 오늘의 상황을 바탕으로 입기 좋은 조합을 추천합니다.";
+
   return (
     <>
       <CurrentWeatherProvider>
@@ -69,16 +105,16 @@ export default function Home() {
               color: "var(--on-primary-fixed-variant, #004880)",
             }}
           >
-            WELCOME BACK
+            {heroEyebrow}
           </div>
           <h1
             className="text-5xl font-extrabold tracking-tighter text-[#191c1d]"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            안녕하세요, Alex님!
+            {greeting}
           </h1>
           <p className="mt-2 text-lg font-light text-[#404753]">
-            오늘의 forecast에 맞춰 Digital Atelier가 준비되었습니다.
+            {intro}
           </p>
         </header>
 
@@ -102,32 +138,32 @@ export default function Home() {
               className="mb-6 text-6xl font-extrabold leading-[1.1] tracking-tighter text-[#191c1d]"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              Smart Outfit Recommendations
+              오늘의 날씨와 일정에 맞춘 코디 추천
             </h2>
             <p className="mb-10 max-w-md text-xl text-[#404753]">
-              현재 날씨와 오늘의 일정을 바탕으로 내 옷장 속 아이템을 조합합니다.
+              기온, 체감 온도, 일정의 분위기를 함께 반영해 내 옷장 안에서 바로 입을 수 있는 조합을 찾습니다.
             </p>
             <div className="flex flex-wrap gap-4">
-              <button
+              <Link
                 className="rounded-full px-11 py-4 font-bold text-white transition-all active:scale-95 hover:opacity-90"
+                href="/recommendations"
                 style={{
                   background: "var(--gradient-hero)",
                   boxShadow: "var(--shadow-ambient-md)",
                 }}
-                type="button"
               >
-                Get Recommendation
-              </button>
-              <button
+                코디 추천 받기
+              </Link>
+              <Link
                 className="rounded-full border px-11 py-4 font-bold text-[var(--primary)] transition-all active:scale-95 hover:bg-[var(--surface-container-low)]"
+                href="/wardrobe"
                 style={{
                   backgroundColor: "var(--surface-container-lowest)",
                   borderColor: "rgb(191 199 213 / 0.15)",
                 }}
-                type="button"
               >
-                Manage Wardrobe
-              </button>
+                내 옷장 관리
+              </Link>
             </div>
           </div>
         </section>
