@@ -5,8 +5,6 @@ export const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 7;
 
 export type SessionUser = {
   userId: number;
-  email: string;
-  nickname: string;
 };
 
 const textEncoder = new TextEncoder();
@@ -30,11 +28,7 @@ function isSessionUser(value: unknown): value is SessionUser {
 
   const payload = value as Record<string, unknown>;
 
-  return (
-    typeof payload.userId === "number" &&
-    typeof payload.email === "string" &&
-    typeof payload.nickname === "string"
-  );
+  return typeof payload.userId === "number";
 }
 
 // HttpOnly 세션 쿠키에 저장할 서명된 JWT를 만든다.

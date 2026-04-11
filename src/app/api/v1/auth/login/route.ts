@@ -1,5 +1,12 @@
+import { NextResponse } from "next/server";
+
 import { validateLoginInput } from "@/lib/auth/login-validation";
 import { verifyPassword } from "@/lib/auth/password";
+import {
+  createSessionToken,
+  SESSION_COOKIE_NAME,
+  SESSION_DURATION_SECONDS,
+} from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -18,7 +25,7 @@ function successResponse(
   },
   init?: ResponseInit,
 ) {
-  return Response.json(
+  return NextResponse.json(
     {
       status: "success",
       message: "로그인에 성공했습니다.",
@@ -33,7 +40,7 @@ function errorResponse(
   code: ErrorCode,
   init?: ResponseInit,
 ) {
-  return Response.json(
+  return NextResponse.json(
     {
       status: "error",
       message,
@@ -95,7 +102,8 @@ export async function POST(request: Request) {
       );
     }
 
-    return successResponse(
+    const sessionToken = await createSessionToken({ userId: user.id });
+    const response = successResponse(
       {
         userId: user.id,
         email: user.email,
@@ -103,6 +111,16 @@ export async function POST(request: Request) {
       },
       { status: 200 },
     );
+
+    response.cookies.set(SESSION_COOKIE_NAME, sessionToken, {
+      httpOnly: true,
+      maxAge: SESSION_DURATION_SECONDS,
+      path: "/",
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    return response;
   } catch {
     return errorResponse("로그인 처리 중 오류가 발생했습니다.", "SERVER_ERROR", {
       status: 500,
