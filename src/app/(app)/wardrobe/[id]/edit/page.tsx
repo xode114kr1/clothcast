@@ -1,6 +1,16 @@
-import { NewWardrobeItemForm } from "@/components/wardrobe/new-wardrobe-item-form";
+import { EditWardrobeItemForm } from "@/components/wardrobe/edit-wardrobe-item-form";
 
-export default function NewWardrobeItemPage() {
+type EditWardrobeItemPageProps = {
+  params: Promise<{
+    id: string;
+  }>;
+};
+
+export default async function EditWardrobeItemPage({
+  params,
+}: EditWardrobeItemPageProps) {
+  const { id } = await params;
+
   return (
     <main className="min-h-screen px-6 pb-24 pt-12">
       <div className="mx-auto max-w-4xl">
@@ -12,14 +22,14 @@ export default function NewWardrobeItemPage() {
             className="mt-2 text-4xl font-extrabold tracking-tight text-[var(--foreground)] md:text-5xl"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            New Addition
+            Edit Clothing
           </h1>
           <p className="mt-4 max-w-lg text-[#404753]">
-            내 옷장에 아이템을 추가하면 더 정확한 코디 추천을 받을 수 있습니다.
+            옷 정보를 현재 상태에 맞게 조정하면 추천 결과도 더 정확해집니다.
           </p>
         </div>
 
-        <NewWardrobeItemForm />
+        <EditWardrobeItemForm clothesId={id} />
       </div>
     </main>
   );
