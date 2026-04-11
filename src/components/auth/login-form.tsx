@@ -73,7 +73,7 @@ export function LoginForm() {
 
   return (
     <>
-      <form className="space-y-6" onSubmit={handleSubmit}>
+      <form aria-busy={isSubmitting} className="space-y-6" onSubmit={handleSubmit}>
         <div className="space-y-2">
           <label
             className="ml-1 block text-sm font-semibold"
@@ -187,7 +187,9 @@ export function LoginForm() {
             }}
             type="submit"
           >
-            <span>{isSubmitting ? "로그인 중..." : "로그인"}</span>
+            <span aria-live="polite">
+              {isSubmitting ? "로그인 중..." : "로그인"}
+            </span>
             <ArrowRight className="h-6 w-6" strokeWidth={1.75} />
           </button>
         </div>
