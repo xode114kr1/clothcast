@@ -58,6 +58,28 @@ export type ClothesIdValidationResult =
       code: ClothesValidationCode;
     };
 
+export type UpdateClothesInput = {
+  name?: string;
+  category?: ClothingCategoryValue;
+  color?: string;
+  fit?: ClothingFitValue;
+  formality?: number;
+  material?: string | null;
+  pattern?: string | null;
+  imageUrl?: string;
+};
+
+export type UpdateClothesValidationResult =
+  | {
+      success: true;
+      data: UpdateClothesInput;
+    }
+  | {
+      success: false;
+      message: string;
+      code: ClothesValidationCode;
+    };
+
 // 알 수 없는 JSON 값이 객체 형태인지 확인한다.
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -87,6 +109,27 @@ function normalizeOptionalString(value: unknown) {
   const trimmed = value.trim();
 
   return trimmed.length > 0 ? trimmed : null;
+}
+
+// PATCH 요청에서 제공된 선택 문자열을 string/null로 정규화하고 잘못된 타입은 거부한다.
+function normalizePatchOptionalString(value: unknown) {
+  if (value === null) {
+    return {
+      success: true,
+      data: null,
+    } as const;
+  }
+
+  if (typeof value !== "string") {
+    return {
+      success: false,
+    } as const;
+  }
+
+  return {
+    success: true,
+    data: value.trim().length > 0 ? value.trim() : null,
+  } as const;
 }
 
 // 요청 값이 DB에서 허용하는 의류 카테고리 enum인지 검사한다.
@@ -191,6 +234,166 @@ export function validateCreateClothesInput(
       pattern,
       imageUrl,
     },
+  };
+}
+
+const UPDATABLE_CLOTHES_FIELDS = new Set([
+  "name",
+  "category",
+  "color",
+  "fit",
+  "formality",
+  "material",
+  "pattern",
+  "imageUrl",
+]);
+
+// 옷 수정 요청 본문이 허용된 필드와 값으로만 구성되어 있는지 검사한다.
+export function validateUpdateClothesInput(
+  body: unknown,
+): UpdateClothesValidationResult {
+  if (!isRecord(body)) {
+    return {
+      success: false,
+      message: "요청 본문이 올바르지 않습니다.",
+      code: "INVALID_REQUEST",
+    };
+  }
+
+  const keys = Object.keys(body);
+
+  if (keys.length === 0) {
+    return {
+      success: false,
+      message: "수정할 의류 정보가 필요합니다.",
+      code: "INVALID_REQUEST",
+    };
+  }
+
+  if (keys.some((key) => !UPDATABLE_CLOTHES_FIELDS.has(key))) {
+    return {
+      success: false,
+      message: "수정할 수 없는 필드가 포함되어 있습니다.",
+      code: "INVALID_REQUEST",
+    };
+  }
+
+  const data: UpdateClothesInput = {};
+
+  if ("name" in body) {
+    const name = normalizeRequiredString(body.name);
+
+    if (!name) {
+      return {
+        success: false,
+        message: "옷 이름을 입력해주세요.",
+        code: "INVALID_REQUEST",
+      };
+    }
+
+    data.name = name;
+  }
+
+  if ("category" in body) {
+    if (!isClothingCategory(body.category)) {
+      return {
+        success: false,
+        message: "올바른 카테고리를 선택해주세요.",
+        code: "INVALID_REQUEST",
+      };
+    }
+
+    data.category = body.category;
+  }
+
+  if ("color" in body) {
+    const color = normalizeRequiredString(body.color);
+
+    if (!color) {
+      return {
+        success: false,
+        message: "색상을 입력해주세요.",
+        code: "INVALID_REQUEST",
+      };
+    }
+
+    data.color = color;
+  }
+
+  if ("fit" in body) {
+    if (!isClothingFit(body.fit)) {
+      return {
+        success: false,
+        message: "올바른 핏을 선택해주세요.",
+        code: "INVALID_REQUEST",
+      };
+    }
+
+    data.fit = body.fit;
+  }
+
+  if ("formality" in body) {
+    if (
+      typeof body.formality !== "number" ||
+      !Number.isInteger(body.formality) ||
+      body.formality < 1 ||
+      body.formality > 5
+    ) {
+      return {
+        success: false,
+        message: "포멀함 점수는 1~5 사이의 정수여야 합니다.",
+        code: "INVALID_REQUEST",
+      };
+    }
+
+    data.formality = body.formality;
+  }
+
+  if ("material" in body) {
+    const material = normalizePatchOptionalString(body.material);
+
+    if (!material.success) {
+      return {
+        success: false,
+        message: "소재는 문자열 또는 null이어야 합니다.",
+        code: "INVALID_REQUEST",
+      };
+    }
+
+    data.material = material.data;
+  }
+
+  if ("pattern" in body) {
+    const pattern = normalizePatchOptionalString(body.pattern);
+
+    if (!pattern.success) {
+      return {
+        success: false,
+        message: "패턴은 문자열 또는 null이어야 합니다.",
+        code: "INVALID_REQUEST",
+      };
+    }
+
+    data.pattern = pattern.data;
+  }
+
+  if ("imageUrl" in body) {
+    const imageUrl = normalizeRequiredString(body.imageUrl);
+
+    if (!imageUrl || !isValidUrl(imageUrl)) {
+      return {
+        success: false,
+        message: "업로드된 이미지 URL이 필요합니다.",
+        code: "INVALID_REQUEST",
+      };
+    }
+
+    data.imageUrl = imageUrl;
+  }
+
+  return {
+    success: true,
+    data,
   };
 }
 
