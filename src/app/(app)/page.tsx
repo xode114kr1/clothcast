@@ -97,25 +97,30 @@ export default async function Home() {
     <>
       <CurrentWeatherProvider>
         <main className="mx-auto max-w-7xl px-8 pb-24 pt-12">
-        <header className="mb-16">
-          <div
-            className="mb-4 inline-block rounded-full px-4 py-1.5 text-xs font-bold tracking-widest"
-            style={{
-              backgroundColor: "var(--primary-fixed)",
-              color: "var(--on-primary-fixed-variant, #004880)",
-            }}
-          >
-            {heroEyebrow}
+        <header className="mb-16 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,24rem)] lg:items-end">
+          <div>
+            <div
+              className="mb-4 inline-block rounded-full px-4 py-1.5 text-xs font-bold tracking-widest"
+              style={{
+                backgroundColor: "var(--primary-fixed)",
+                color: "var(--on-primary-fixed-variant, #004880)",
+              }}
+            >
+              {heroEyebrow}
+            </div>
+            <h1
+              className="text-4xl font-extrabold tracking-tighter text-[#191c1d] md:text-5xl"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              {greeting}
+            </h1>
+            <p className="mt-2 max-w-3xl text-lg font-light text-[#404753]">
+              {intro}
+            </p>
           </div>
-          <h1
-            className="text-5xl font-extrabold tracking-tighter text-[#191c1d]"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            {greeting}
-          </h1>
-          <p className="mt-2 text-lg font-light text-[#404753]">
-            {intro}
-          </p>
+          <div className="w-full lg:justify-self-end">
+            <HomeWeatherCard />
+          </div>
         </header>
 
         <section
@@ -168,19 +173,13 @@ export default async function Home() {
           </div>
         </section>
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
-          <div className="md:col-span-4">
-            <HomeWeatherCard />
-          </div>
-
-          <div className="md:col-span-8">
-            <div
-              className="h-full rounded-[var(--radius-xl)] p-8"
-              style={{
-                backgroundColor: "var(--surface-container-lowest)",
-                boxShadow: "var(--shadow-ambient-md)",
-              }}
-            >
+        <div
+          className="h-full rounded-[var(--radius-xl)] p-8"
+          style={{
+            backgroundColor: "var(--surface-container-lowest)",
+            boxShadow: "var(--shadow-ambient-md)",
+          }}
+        >
               <div className="mb-12 flex items-end justify-between">
                 <div>
                   <span className="text-xs font-bold tracking-widest text-[#404753]">
@@ -246,8 +245,6 @@ export default async function Home() {
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
         </div>
 
         <section
