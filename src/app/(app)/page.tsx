@@ -1,36 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { cookies } from "next/headers";
-import {
-  ArrowRight,
-  Leaf,
-  Sparkles,
-  Factory,
-  Heart,
-} from "lucide-react";
+import { ArrowRight, Leaf, Sparkles, Factory, Heart } from "lucide-react";
 
 import { HomeWeatherCard } from "@/components/home/home-weather-card";
 import { WeatherAwareChoiceDescription } from "@/components/home/weather-aware-choice-description";
 import { CurrentWeatherProvider } from "@/components/recommendations/current-weather-provider";
 import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
-
-const atelierChoices = [
-  {
-    title: "메리노 울 오버코트",
-    description: "현재 날씨에 맞춰 알맞은 아우터",
-    src: "/images/home-overcoat.svg",
-    alt: "오버코트 예시 이미지",
-    featured: true,
-  },
-  {
-    title: "Raw Silk Atelier Shirt",
-    description: "가볍고 단정한 레이어링",
-    src: "/images/home-shirt.svg",
-    alt: "실크 셔츠 예시 이미지",
-    featured: false,
-  },
-];
 
 const valueProps = [
   {
@@ -77,6 +54,7 @@ async function getHomeUser() {
     return await prisma.user.findUnique({
       where: { id: session.userId },
       select: {
+        id: true,
         nickname: true,
       },
     });
@@ -85,8 +63,28 @@ async function getHomeUser() {
   }
 }
 
+async function getRecentClothes(userId: number) {
+  try {
+    return await prisma.clothes.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      take: 3,
+      select: {
+        id: true,
+        name: true,
+        imageUrl: true,
+        category: true,
+        createdAt: true,
+      },
+    });
+  } catch {
+    return [];
+  }
+}
+
 export default async function Home() {
   const user = await getHomeUser();
+  const recentClothes = user ? await getRecentClothes(user.id) : [];
   const heroEyebrow = user ? "TODAY'S CLOTHCAST" : "CLOTHCAST";
   const greeting = user ? `${user.nickname}님, 오늘 입을 옷을 골라볼까요?` : "날씨와 일정에 맞는 코디를 더 쉽게 고르세요";
   const intro = user
@@ -201,50 +199,75 @@ export default async function Home() {
                 </Link>
               </div>
 
-              <div className="flex gap-6 overflow-hidden">
-                {atelierChoices.map((item) => (
-                  <div
-                    key={item.title}
-                    className={`overflow-hidden rounded-[var(--radius-xl)] ${
-                      item.featured
-                        ? "w-80 flex-shrink-0 group"
-                        : "origin-left scale-95 opacity-60"
-                    }`}
-                    style={{ backgroundColor: "var(--surface-container-low)" }}
-                  >
-                    <div className="relative h-96">
-                      <Image
-                        alt={item.alt}
-                        className={`h-full w-full object-cover ${
-                          item.featured
-                            ? "transition-transform duration-700 group-hover:scale-105"
-                            : ""
+              {recentClothes.length > 0 ? (
+                <div className="flex gap-6 overflow-hidden">
+                  {recentClothes.map((item, index) => {
+                    const featured = index === 0;
+
+                    return (
+                      <div
+                        key={item.id}
+                        className={`overflow-hidden rounded-[var(--radius-xl)] ${
+                          featured
+                            ? "w-80 flex-shrink-0 group"
+                            : "origin-left scale-95 opacity-60"
                         }`}
-                        height={768}
-                        src={item.src}
-                        width={512}
-                      />
-                      {item.featured ? (
-                        <div className="absolute right-4 top-4 rounded-full bg-[rgb(255_255_255_/_0.8)] p-2 backdrop-blur-md">
-                          <Heart className="h-5 w-5 text-[var(--primary)]" strokeWidth={2} />
+                        style={{ backgroundColor: "var(--surface-container-low)" }}
+                      >
+                        <div className="relative h-96">
+                          <Image
+                            alt={`${item.name} 이미지`}
+                            className={`h-full w-full object-cover ${
+                              featured
+                                ? "transition-transform duration-700 group-hover:scale-105"
+                                : ""
+                            }`}
+                            fill
+                            src={item.imageUrl}
+                            unoptimized
+                          />
+                          {featured ? (
+                            <div className="absolute right-4 top-4 rounded-full bg-[rgb(255_255_255_/_0.8)] p-2 backdrop-blur-md">
+                              <Heart className="h-5 w-5 text-[var(--primary)]" strokeWidth={2} />
+                            </div>
+                          ) : null}
                         </div>
-                      ) : null}
-                    </div>
-                    <div className="p-6">
-                      <h4 className="text-xl font-bold text-[#191c1d]">
-                        {item.title}
-                      </h4>
-                      <p className="mt-1 text-sm text-[#404753]">
-                        {item.featured ? (
-                          <WeatherAwareChoiceDescription />
-                        ) : (
-                          item.description
-                        )}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                        <div className="p-6">
+                          <h4 className="text-xl font-bold text-[#191c1d]">
+                            {item.name}
+                          </h4>
+                          <p className="mt-1 text-sm text-[#404753]">
+                            {featured ? (
+                              <WeatherAwareChoiceDescription />
+                            ) : (
+                              "최근 등록한 옷장에서 가져온 아이템"
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div
+                  className="rounded-[var(--radius-xl)] p-10 text-center"
+                  style={{ backgroundColor: "var(--surface-container-low)" }}
+                >
+                  <p className="text-lg font-semibold text-[#191c1d]">
+                    아직 등록한 옷이 없습니다.
+                  </p>
+                  <p className="mt-2 text-sm text-[#404753]">
+                    첫 옷을 등록하면 오늘의 예시 코디에 바로 반영됩니다.
+                  </p>
+                  <Link
+                    className="mt-6 inline-flex rounded-full px-8 py-3 text-sm font-bold text-white"
+                    href={user ? "/wardrobe/new" : "/login"}
+                    style={{ background: "var(--gradient-hero)" }}
+                  >
+                    {user ? "첫 옷 등록하기" : "로그인하고 옷 등록하기"}
+                  </Link>
+                </div>
+              )}
         </div>
 
         <section

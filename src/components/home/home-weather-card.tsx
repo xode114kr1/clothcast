@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { Cloud, CloudSun, MapPin } from "lucide-react";
 
 import { useCurrentWeather } from "@/components/recommendations/current-weather-provider";
