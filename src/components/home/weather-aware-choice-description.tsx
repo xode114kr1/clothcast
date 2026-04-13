@@ -9,5 +9,5 @@ export function WeatherAwareChoiceDescription() {
     return "현재 날씨에 맞춰 알맞은 아우터";
   }
 
-  return `${weatherState.data.temperature}도 ${weatherState.data.weather}에 알맞은 아우터`;
+  return `현재 ${weatherState.data.temperature}도 ${weatherState.data.weather}에 어울리는 아우터`;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Cloud, CloudSun } from "lucide-react";
+import { Cloud, CloudSun, MapPin } from "lucide-react";
 
 import { useCurrentWeather } from "@/components/recommendations/current-weather-provider";
 
@@ -11,20 +11,25 @@ export function HomeWeatherCard() {
     return (
       <div
         aria-busy="true"
-        className="flex h-full min-h-80 flex-col justify-between rounded-[var(--radius-xl)] p-8"
+        className="rounded-[var(--radius-lg)] p-5"
         style={{ backgroundColor: "var(--surface-container-low)" }}
       >
-        <div>
-          <span className="text-xs font-bold tracking-widest text-[#404753]">
-            LOCAL FORECAST
-          </span>
-          <div className="mt-6 flex items-center gap-4">
-            <CloudSun className="h-16 w-16 text-[var(--primary)]" strokeWidth={1.6} />
-            <div className="h-12 w-28 animate-pulse rounded bg-[var(--surface-container-highest)]" />
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <span className="text-xs font-bold tracking-widest text-[#404753]">
+              LOCAL FORECAST
+            </span>
+            <div className="mt-3 h-8 w-24 animate-pulse rounded bg-[var(--surface-container-highest)]" />
+          </div>
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgb(211_228_255_/_0.45)]">
+            <CloudSun
+              className="h-6 w-6 text-[var(--primary)]"
+              strokeWidth={1.6}
+            />
           </div>
         </div>
-        <p className="text-sm font-semibold text-[#404753]">
-          현재 위치의 날씨를 확인하는 중입니다.
+        <p className="mt-3 text-sm font-semibold text-[#404753]">
+          날씨 확인 중
         </p>
       </div>
     );
@@ -33,24 +38,28 @@ export function HomeWeatherCard() {
   if (weatherState.status === "error") {
     return (
       <div
-        className="flex h-full min-h-80 flex-col justify-between rounded-[var(--radius-xl)] p-8"
+        className="rounded-[var(--radius-lg)] p-5"
         style={{ backgroundColor: "rgb(255 218 214 / 0.32)" }}
       >
-        <div>
-          <span className="text-xs font-bold tracking-widest text-[#8c1d18]">
-            LOCAL FORECAST
-          </span>
-          <div className="mt-6 flex items-center gap-4">
-            <CloudSun className="h-16 w-16 text-[#8c1d18]" strokeWidth={1.6} />
-            <span
-              className="text-2xl font-bold text-[#8c1d18]"
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <span className="text-xs font-bold tracking-widest text-[#8c1d18]">
+              LOCAL FORECAST
+            </span>
+            <p
+              className="mt-3 text-xl font-bold text-[#8c1d18]"
               style={{ fontFamily: "var(--font-display)" }}
             >
               조회 실패
-            </span>
+            </p>
+          </div>
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgb(255_255_255_/_0.56)]">
+            <CloudSun className="h-6 w-6 text-[#8c1d18]" strokeWidth={1.6} />
           </div>
         </div>
-        <p className="text-sm font-semibold text-[#8c1d18]">{weatherState.message}</p>
+        <p className="mt-3 text-sm font-semibold text-[#8c1d18]">
+          {weatherState.message}
+        </p>
       </div>
     );
   }
@@ -59,31 +68,35 @@ export function HomeWeatherCard() {
 
   return (
     <div
-      className="flex h-full min-h-80 flex-col justify-between rounded-[var(--radius-xl)] p-8"
+      className="rounded-[var(--radius-lg)] p-5"
       style={{ backgroundColor: "var(--surface-container-low)" }}
     >
-      <div>
-        <span className="text-xs font-bold tracking-widest text-[#404753]">
-          LOCAL FORECAST
-        </span>
-        <div className="mt-6 flex items-center gap-4">
-          <Cloud className="h-16 w-16 text-[var(--primary)]" strokeWidth={1.6} />
-          <span
-            className="text-5xl font-bold"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            {data.temperature}°C
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <span className="text-xs font-bold tracking-widest text-[#404753]">
+            LOCAL FORECAST
           </span>
+          <div className="mt-3 flex items-end gap-2">
+            <span
+              className="text-4xl font-bold leading-none"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              {data.temperature}°C
+            </span>
+            <span className="pb-0.5 text-sm font-semibold text-[#404753]">
+              {data.weather}
+            </span>
+          </div>
+        </div>
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgb(211_228_255_/_0.45)]">
+          <Cloud className="h-6 w-6 text-[var(--primary)]" strokeWidth={1.6} />
         </div>
       </div>
-      <div>
-        <p className="text-lg font-semibold text-[#191c1d]">
-          {data.weather}
-        </p>
-        <p className="text-sm text-[#404753]">
-          {isFallbackLocation ? `${data.location} 기본 지역 · ` : ""}
-          체감 {data.feelsLike}°C · 습도 {data.humidity}% · 바람 {data.windSpeed}m/s
-        </p>
+      <div className="mt-3 flex items-center gap-2 text-sm font-bold text-[#404753]">
+        <MapPin className="h-4 w-4 text-[var(--primary)]" strokeWidth={2} />
+        <span>
+          {isFallbackLocation ? `${data.location} 기본 지역` : data.location}
+        </span>
       </div>
     </div>
   );
