@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Cloud, CloudSun, MapPin } from "lucide-react";
 
 import { useCurrentWeather } from "@/components/recommendations/current-weather-provider";
@@ -22,7 +23,10 @@ export function HomeWeatherCard() {
             <div className="mt-3 h-8 w-24 animate-pulse rounded bg-[var(--surface-container-highest)]" />
           </div>
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgb(211_228_255_/_0.45)]">
-            <CloudSun className="h-6 w-6 text-[var(--primary)]" strokeWidth={1.6} />
+            <CloudSun
+              className="h-6 w-6 text-[var(--primary)]"
+              strokeWidth={1.6}
+            />
           </div>
         </div>
         <p className="mt-3 text-sm font-semibold text-[#404753]">
@@ -91,7 +95,9 @@ export function HomeWeatherCard() {
       </div>
       <div className="mt-3 flex items-center gap-2 text-sm font-bold text-[#404753]">
         <MapPin className="h-4 w-4 text-[var(--primary)]" strokeWidth={2} />
-        <span>{isFallbackLocation ? `${data.location} 기본 지역` : data.location}</span>
+        <span>
+          {isFallbackLocation ? `${data.location} 기본 지역` : data.location}
+        </span>
       </div>
     </div>
   );

@@ -183,13 +183,13 @@ export default async function Home() {
               <div className="mb-12 flex items-end justify-between">
                 <div>
                   <span className="text-xs font-bold tracking-widest text-[#404753]">
-                    CURATED FOR YOU
+                    TODAYS EDIT
                   </span>
                   <h3
                     className="mt-2 text-3xl font-bold"
                     style={{ fontFamily: "var(--font-display)" }}
                   >
-                    Atelier&apos;s Choice
+                    오늘의 예시 코디
                   </h3>
                 </div>
                 <Link
