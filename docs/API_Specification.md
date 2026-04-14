@@ -733,6 +733,19 @@ Response:
 - 옷장 비어 있음
 - AI 응답 실패
 
+환경 변수:
+
+| 변수 | 설명 |
+| --- | --- |
+| `GEMINI_API_KEY` | 서버에서 Gemini API를 호출할 때 사용하는 API 키 |
+| `GEMINI_MODEL` | 코디 추천에 사용할 Gemini 모델. 기본값은 `gemini-2.5-flash` |
+
+구현 메모:
+
+- Gemini API 키는 클라이언트에 노출하지 않고 서버 Route Handler에서만 사용한다.
+- MVP에서는 추천 히스토리를 저장하지 않으므로 `recommendationId`는 `null`일 수 있다.
+- AI 응답 실패, 일시적인 모델 과부하, 잘못된 AI 응답 형식은 `AI_RECOMMENDATION_FAILED`로 반환한다.
+
 ### 8.2 추천 히스토리 조회(Optional)
 
 Endpoint:
