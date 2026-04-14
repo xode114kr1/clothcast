@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import {
+  AlertTriangle,
   Brain,
   BriefcaseBusiness,
   CheckCircle2,
@@ -63,6 +64,21 @@ function getCategoryLabel(category: string) {
   return labels[category] ?? category;
 }
 
+// 추천 결과나 현재 상태에 맞는 상단 배지 문구를 만든다.
+function getResultStatusLabel({
+  isSubmitting,
+  recommendation,
+}: {
+  isSubmitting: boolean;
+  recommendation: RecommendationResponseData | null;
+}) {
+  if (isSubmitting) {
+    return "분석 중";
+  }
+
+  return recommendation ? recommendation.styleTone : "추천 대기 중";
+}
+
 // 추천 생성 중 표시할 의류 카드 스켈레톤을 렌더링한다.
 function PlaceholderCards() {
   return (
@@ -93,6 +109,53 @@ function PlaceholderCards() {
   );
 }
 
+// 추천 생성 중 현재 처리 상태를 문장으로 보여준다.
+function LoadingSummary() {
+  return (
+    <div
+      aria-live="polite"
+      className="flex min-h-96 flex-col items-center justify-center rounded-[var(--radius-xl)] p-10 text-center md:col-span-2"
+      style={{ backgroundColor: "var(--surface-container-lowest)" }}
+    >
+      <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-[rgb(211_228_255_/_0.45)] text-[var(--primary)]">
+        <Sparkles className="h-8 w-8 animate-pulse" strokeWidth={1.8} />
+      </div>
+      <h3
+        className="mb-3 text-2xl font-bold text-[#191c1d]"
+        style={{ fontFamily: "var(--font-display)" }}
+      >
+        옷장과 날씨를 비교하는 중입니다
+      </h3>
+      <p className="max-w-md text-[#404753]">
+        등록된 옷만 살펴보고 오늘의 일정에 맞는 조합을 고르고 있습니다.
+      </p>
+    </div>
+  );
+}
+
+// 추천 전 빈 결과 영역에서 다음 행동을 안내한다.
+function EmptyRecommendationState() {
+  return (
+    <div
+      className="flex min-h-96 flex-col items-center justify-center rounded-[var(--radius-xl)] p-10 text-center md:col-span-2"
+      style={{ backgroundColor: "var(--surface-container-lowest)" }}
+    >
+      <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-[rgb(211_228_255_/_0.45)] text-[var(--primary)]">
+        <Shirt className="h-8 w-8" strokeWidth={1.8} />
+      </div>
+      <h3
+        className="mb-3 text-2xl font-bold text-[#191c1d]"
+        style={{ fontFamily: "var(--font-display)" }}
+      >
+        오늘의 상황을 입력해주세요
+      </h3>
+      <p className="max-w-md text-[#404753]">
+        옷장에 등록한 옷과 현재 날씨를 함께 보고 지금 입기 좋은 조합을 정리합니다.
+      </p>
+    </div>
+  );
+}
+
 // 프롬프트 입력, 추천 API 호출, 추천 결과 표시를 담당한다.
 export function RecommendationExperience() {
   const weatherState = useCurrentWeather();
@@ -106,6 +169,10 @@ export function RecommendationExperience() {
     prompt.trim().length > 0 &&
     weatherState.status === "success" &&
     !isSubmitting;
+  const resultStatusLabel = getResultStatusLabel({
+    isSubmitting,
+    recommendation,
+  });
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -203,7 +270,22 @@ export function RecommendationExperience() {
             </button>
           </div>
           {errorMessage ? (
-            <p className="mt-5 font-semibold text-[#8c1d18]">{errorMessage}</p>
+            <div
+              className="mt-5 flex items-start gap-3 rounded-[var(--radius-md)] px-5 py-4"
+              role="alert"
+              style={{ backgroundColor: "rgb(255 218 214 / 0.32)" }}
+            >
+              <AlertTriangle
+                className="mt-0.5 h-5 w-5 shrink-0 text-[#8c1d18]"
+                strokeWidth={2}
+              />
+              <div>
+                <p className="font-bold text-[#8c1d18]">추천을 만들지 못했습니다.</p>
+                <p className="mt-1 text-sm font-medium text-[#8c1d18]">
+                  {errorMessage}
+                </p>
+              </div>
+            </div>
           ) : null}
         </form>
       </section>
@@ -219,14 +301,19 @@ export function RecommendationExperience() {
           <div className="flex items-center gap-2 text-[var(--primary)]">
             <CheckCircle2 className="h-4 w-4" strokeWidth={2.2} />
             <span className="text-sm font-bold uppercase tracking-wider">
-              {recommendation ? recommendation.styleTone : "추천 대기 중"}
+              {resultStatusLabel}
             </span>
           </div>
         </div>
 
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:col-span-8">
-            {isSubmitting ? <PlaceholderCards /> : null}
+            {isSubmitting ? (
+              <>
+                <LoadingSummary />
+                <PlaceholderCards />
+              </>
+            ) : null}
 
             {!isSubmitting && recommendation
               ? recommendation.recommendedItems.map((item) => (
@@ -262,25 +349,7 @@ export function RecommendationExperience() {
                 ))
               : null}
 
-            {!isSubmitting && !recommendation ? (
-              <div
-                className="flex min-h-96 flex-col items-center justify-center rounded-[var(--radius-xl)] p-10 text-center md:col-span-2"
-                style={{ backgroundColor: "var(--surface-container-lowest)" }}
-              >
-                <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-[rgb(211_228_255_/_0.45)] text-[var(--primary)]">
-                  <Shirt className="h-8 w-8" strokeWidth={1.8} />
-                </div>
-                <h3
-                  className="mb-3 text-2xl font-bold text-[#191c1d]"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  오늘의 상황을 입력해주세요
-                </h3>
-                <p className="max-w-md text-[#404753]">
-                  날씨와 옷장 데이터를 함께 보고 지금 입기 좋은 조합을 정리합니다.
-                </p>
-              </div>
-            ) : null}
+            {!isSubmitting && !recommendation ? <EmptyRecommendationState /> : null}
           </div>
 
           <div className="lg:col-span-4">
@@ -300,16 +369,42 @@ export function RecommendationExperience() {
                 </h4>
               </div>
 
-              <div className="space-y-6 leading-relaxed text-[#404753]">
-                <WeatherSelectionSummary />
+                <div className="space-y-6 leading-relaxed text-[#404753]">
+                  <WeatherSelectionSummary />
 
-                <div className="rounded-[var(--radius-md)] bg-white p-6 shadow-sm">
-                  <p className="italic">
-                    {recommendation
-                      ? `"${recommendation.reason}"`
-                      : "일정과 날씨를 입력하면 옷장 속 아이템만 골라 추천합니다."}
-                  </p>
-                </div>
+                  {recommendation ? (
+                    <div
+                      className="grid grid-cols-2 gap-3 rounded-[var(--radius-md)] p-4"
+                      style={{ backgroundColor: "rgb(255 255 255 / 0.68)" }}
+                    >
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#707884]">
+                          아이템
+                        </p>
+                        <p className="mt-1 font-bold text-[#191c1d]">
+                          {recommendation.recommendedItems.length}개
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#707884]">
+                          무드
+                        </p>
+                        <p className="mt-1 font-bold text-[#191c1d]">
+                          {recommendation.styleTone}
+                        </p>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  <div className="rounded-[var(--radius-md)] bg-white p-6 shadow-sm">
+                    <p className="italic">
+                      {isSubmitting
+                        ? "옷장 데이터와 날씨 조건을 비교하고 있습니다."
+                        : recommendation
+                          ? `"${recommendation.reason}"`
+                          : "일정과 날씨를 입력하면 옷장 속 아이템만 골라 추천합니다."}
+                    </p>
+                  </div>
 
                 <div className="flex flex-col gap-4 pt-4">
                   <div className="flex items-center gap-3">
