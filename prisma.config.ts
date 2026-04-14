@@ -9,6 +9,6 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    url: "postgresql://clothcast:clothcast_password@clothcast-db:5432/clothcast",
   },
 });
