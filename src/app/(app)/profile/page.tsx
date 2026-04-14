@@ -165,7 +165,7 @@ export default async function ProfilePage() {
       <section className="grid grid-cols-1 items-end gap-12 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <div
-            className="flex aspect-square max-w-72 items-center justify-center rounded-[var(--radius-xl)] text-8xl font-extrabold text-white shadow-2xl"
+            className="flex aspect-square max-w-72 items-center justify-center rounded-[var(--radius-xl)] text-8xl font-extrabold text-white shadow-[var(--shadow-ambient-md)]"
             style={{
               background: "var(--gradient-hero)",
               fontFamily: "var(--font-display)",
@@ -220,7 +220,7 @@ export default async function ProfilePage() {
 
       <section className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <Link
-          className="group flex items-center justify-between rounded-[var(--radius-xl)] p-10 transition-all duration-300 hover:bg-[rgb(211_228_255_/_0.2)]"
+          className="group flex items-center justify-between rounded-[var(--radius-xl)] p-10 shadow-[var(--shadow-ambient-sm)] transition-all duration-300 hover:bg-[rgb(211_228_255_/_0.2)] hover:shadow-[var(--shadow-ambient-md)]"
           href="/wardrobe"
           style={{ backgroundColor: "var(--surface-container-lowest)" }}
         >
@@ -245,7 +245,7 @@ export default async function ProfilePage() {
         </Link>
 
         <Link
-          className="group flex items-center justify-between rounded-[var(--radius-xl)] p-10 transition-all duration-300 hover:bg-[rgb(211_228_255_/_0.2)]"
+          className="group flex items-center justify-between rounded-[var(--radius-xl)] p-10 shadow-[var(--shadow-ambient-sm)] transition-all duration-300 hover:bg-[rgb(211_228_255_/_0.2)] hover:shadow-[var(--shadow-ambient-md)]"
           href="/recommendations"
           style={{ backgroundColor: "var(--surface-container-lowest)" }}
         >

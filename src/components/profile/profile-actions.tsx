@@ -38,9 +38,10 @@ export function ProfileActions() {
         추천 받기
       </Link>
       <button
-        className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-[rgb(255_255_255_/_0.55)] px-11 py-4 font-bold text-[#8c1d18] transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full px-11 py-4 font-bold text-[#8c1d18] shadow-[var(--shadow-ambient-sm)] transition-opacity hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-60"
         disabled={isLoggingOut}
         onClick={handleLogout}
+        style={{ backgroundColor: "var(--surface-container-lowest)" }}
         type="button"
       >
         <LogOut className="h-5 w-5" strokeWidth={2.2} />
