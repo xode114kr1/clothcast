@@ -27,7 +27,9 @@ type RecommendationApiErrorData = {
 };
 
 // 알 수 없는 API 응답 값이 추천 결과 데이터 형태인지 확인한다.
-function isRecommendationData(value: unknown): value is RecommendationResponseData {
+function isRecommendationData(
+  value: unknown,
+): value is RecommendationResponseData {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
     return false;
   }
@@ -180,7 +182,8 @@ function EmptyRecommendationState() {
         오늘의 상황을 입력해주세요
       </h3>
       <p className="max-w-md text-[#404753]">
-        옷장에 등록한 옷과 현재 날씨를 함께 보고 지금 입기 좋은 조합을 정리합니다.
+        옷장에 등록한 옷과 현재 날씨를 함께 보고 지금 입기 좋은 조합을
+        정리합니다.
       </p>
     </div>
   );
@@ -233,9 +236,9 @@ export function RecommendationExperience() {
           weather: weatherState.data,
         }),
       });
-      const data = (await response.json().catch(() => null)) as
-        | RecommendationApiResponse
-        | null;
+      const data = (await response
+        .json()
+        .catch(() => null)) as RecommendationApiResponse | null;
 
       if (
         !response.ok ||
@@ -310,7 +313,9 @@ export function RecommendationExperience() {
                 strokeWidth={2}
               />
               <div>
-                <p className="font-bold text-[#8c1d18]">추천을 만들지 못했습니다.</p>
+                <p className="font-bold text-[#8c1d18]">
+                  추천을 만들지 못했습니다.
+                </p>
                 <p className="mt-1 text-sm font-medium text-[#8c1d18]">
                   {errorMessage}
                 </p>
@@ -350,7 +355,9 @@ export function RecommendationExperience() {
                   <div
                     key={item.id}
                     className="group rounded-[var(--radius-xl)] p-4 transition-all hover:bg-[rgb(211_228_255_/_0.2)]"
-                    style={{ backgroundColor: "var(--surface-container-lowest)" }}
+                    style={{
+                      backgroundColor: "var(--surface-container-lowest)",
+                    }}
                   >
                     <div
                       className="mb-6 aspect-[3/4] overflow-hidden rounded-[var(--radius-md)]"
@@ -362,6 +369,7 @@ export function RecommendationExperience() {
                         height={800}
                         src={item.imageUrl}
                         width={600}
+                        unoptimized
                       />
                     </div>
                     <div className="px-2 pb-2">
@@ -379,7 +387,9 @@ export function RecommendationExperience() {
                 ))
               : null}
 
-            {!isSubmitting && !recommendation ? <EmptyRecommendationState /> : null}
+            {!isSubmitting && !recommendation ? (
+              <EmptyRecommendationState />
+            ) : null}
           </div>
 
           <div className="lg:col-span-4">
@@ -399,42 +409,42 @@ export function RecommendationExperience() {
                 </h4>
               </div>
 
-                <div className="space-y-6 leading-relaxed text-[#404753]">
-                  <WeatherSelectionSummary />
+              <div className="space-y-6 leading-relaxed text-[#404753]">
+                <WeatherSelectionSummary />
 
-                  {recommendation ? (
-                    <div
-                      className="grid grid-cols-2 gap-3 rounded-[var(--radius-md)] p-4"
-                      style={{ backgroundColor: "rgb(255 255 255 / 0.68)" }}
-                    >
-                      <div>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#707884]">
-                          아이템
-                        </p>
-                        <p className="mt-1 font-bold text-[#191c1d]">
-                          {recommendation.recommendedItems.length}개
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#707884]">
-                          무드
-                        </p>
-                        <p className="mt-1 font-bold text-[#191c1d]">
-                          {recommendation.styleTone}
-                        </p>
-                      </div>
+                {recommendation ? (
+                  <div
+                    className="grid grid-cols-2 gap-3 rounded-[var(--radius-md)] p-4"
+                    style={{ backgroundColor: "rgb(255 255 255 / 0.68)" }}
+                  >
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#707884]">
+                        아이템
+                      </p>
+                      <p className="mt-1 font-bold text-[#191c1d]">
+                        {recommendation.recommendedItems.length}개
+                      </p>
                     </div>
-                  ) : null}
-
-                  <div className="rounded-[var(--radius-md)] bg-white p-6 shadow-sm">
-                    <p className="italic">
-                      {isSubmitting
-                        ? "옷장 데이터와 날씨 조건을 비교하고 있습니다."
-                        : recommendation
-                          ? `"${recommendation.reason}"`
-                          : "일정과 날씨를 입력하면 옷장 속 아이템만 골라 추천합니다."}
-                    </p>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#707884]">
+                        무드
+                      </p>
+                      <p className="mt-1 font-bold text-[#191c1d]">
+                        {recommendation.styleTone}
+                      </p>
+                    </div>
                   </div>
+                ) : null}
+
+                <div className="rounded-[var(--radius-md)] bg-white p-6 shadow-sm">
+                  <p className="italic">
+                    {isSubmitting
+                      ? "옷장 데이터와 날씨 조건을 비교하고 있습니다."
+                      : recommendation
+                        ? `"${recommendation.reason}"`
+                        : "일정과 날씨를 입력하면 옷장 속 아이템만 골라 추천합니다."}
+                  </p>
+                </div>
 
                 <div className="flex flex-col gap-4 pt-4">
                   <div className="flex items-center gap-3">
