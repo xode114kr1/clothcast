@@ -1,0 +1,9 @@
+<svg width="720" height="960" viewBox="0 0 720 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="720" height="960" fill="#F4F5F6"/>
+  <rect x="84" y="72" width="552" height="816" rx="40" fill="#FFFFFF"/>
+  <path d="M188 586C188 586 266 528 322 528H392V652H276C244 652 216 670 196 694L148 752H344V806H100V736L156 654C170 632 184 608 188 586Z" fill="#111827"/>
+  <path d="M532 586C532 586 454 528 398 528H328V652H444C476 652 504 670 524 694L572 752H376V806H620V736L564 654C550 632 536 608 532 586Z" fill="#111827"/>
+  <path d="M244 470H322V586H244V470Z" fill="#374151"/>
+  <path d="M398 470H476V586H398V470Z" fill="#374151"/>
+  <text x="360" y="838" text-anchor="middle" fill="#0060A8" font-family="Arial, sans-serif" font-size="28" font-weight="700">Dummy Boots</text>
+</svg>

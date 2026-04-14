@@ -1,0 +1,11 @@
+<svg width="720" height="960" viewBox="0 0 720 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="720" height="960" fill="#EEF1F4"/>
+  <rect x="84" y="72" width="552" height="816" rx="40" fill="#FFFFFF"/>
+  <path d="M248 196L360 138L472 196L540 328L486 382V786H234V382L180 328L248 196Z" fill="#4B5563"/>
+  <path d="M322 184H398L432 232L360 286L288 232L322 184Z" fill="#374151"/>
+  <path d="M234 382L180 328L120 418L176 458L234 382Z" fill="#6B7280"/>
+  <path d="M486 382L540 328L600 418L544 458L486 382Z" fill="#6B7280"/>
+  <path d="M260 340H460" stroke="#D1D5DB" stroke-width="6" stroke-dasharray="12 12"/>
+  <path d="M260 404H460" stroke="#D1D5DB" stroke-width="6" stroke-dasharray="12 12"/>
+  <text x="360" y="838" text-anchor="middle" fill="#0060A8" font-family="Arial, sans-serif" font-size="28" font-weight="700">Dummy Sweater</text>
+</svg>

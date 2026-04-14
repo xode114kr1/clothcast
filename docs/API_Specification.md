@@ -269,6 +269,22 @@ Response:
 
 ## 5. 의류(옷장) API
 
+의류 데이터는 아래 `Clothes` 스키마를 기준으로 저장한다.
+
+| 필드 | 타입 | 설명 |
+| --- | --- | --- |
+| `id` | `number` | 의류 고유 ID, PK |
+| `userId` | `number` | 의류를 등록한 사용자 ID, `User.id` FK |
+| `name` | `string` | 옷 이름 |
+| `category` | `ClothingCategory` | `TOP`, `BOTTOM`, `OUTER`, `SHOES` 중 하나 |
+| `color` | `string` | 색상 |
+| `fit` | `ClothingFit` | `oversized`, `regular`, `slim` 중 하나 |
+| `formality` | `number` | 포멀함 점수, `1~5` |
+| `material` | `string \| null` | 소재, 선택값 |
+| `pattern` | `string \| null` | 패턴, 선택값 |
+| `imageUrl` | `string` | 업로드된 이미지 URL |
+| `createdAt` | `string` | 등록일 |
+
 ### 5.1 옷 등록
 
 Endpoint:
@@ -288,8 +304,10 @@ Request Body:
   "name": "네이비 블레이저",
   "category": "OUTER",
   "color": "NAVY",
-  "season": "SPRING_FALL",
-  "styleTags": ["FORMAL", "INTERVIEW"],
+  "fit": "regular",
+  "formality": 5,
+  "material": "울",
+  "pattern": "솔리드",
   "imageUrl": "https://example.com/blazer.jpg"
 }
 ```
@@ -299,10 +317,12 @@ Request Body:
 | 필드 | 타입 | 설명 |
 | --- | --- | --- |
 | `name` | `string` | 옷 이름 |
-| `category` | `string` | 상의/하의/아우터/신발 |
+| `category` | `string` | `TOP`, `BOTTOM`, `OUTER`, `SHOES` 중 하나 |
 | `color` | `string` | 색상 |
-| `season` | `string` | 계절감 |
-| `styleTags` | `string[]` | 스타일 태그 |
+| `fit` | `string` | `oversized`, `regular`, `slim` 중 하나 |
+| `formality` | `number` | 포멀함 점수, `1~5` |
+| `material` | `string \| null` | 소재, 선택값 |
+| `pattern` | `string \| null` | 패턴, 선택값 |
 | `imageUrl` | `string` | 업로드된 이미지 URL |
 
 Response:
@@ -312,12 +332,15 @@ Response:
   "status": "success",
   "message": "의류가 등록되었습니다.",
   "data": {
-    "clothId": 101,
+    "id": 101,
+    "userId": 1,
     "name": "네이비 블레이저",
     "category": "OUTER",
     "color": "NAVY",
-    "season": "SPRING_FALL",
-    "styleTags": ["FORMAL", "INTERVIEW"],
+    "fit": "regular",
+    "formality": 5,
+    "material": "울",
+    "pattern": "솔리드",
     "imageUrl": "https://example.com/blazer.jpg",
     "createdAt": "2026-04-01T10:10:00Z"
   }
@@ -329,6 +352,8 @@ Response:
 - 인증 안 됨
 - 필수값 누락
 - 잘못된 카테고리 값
+- 잘못된 핏 값
+- 포멀함 점수 범위 초과
 
 ### 5.2 옷 목록 조회
 
@@ -346,7 +371,8 @@ Query Parameters(Optional):
 
 ```text
 category=OUTER
-styleTag=FORMAL
+fit=regular
+formality=5
 ```
 
 Response:
@@ -357,21 +383,25 @@ Response:
   "message": "의류 목록을 조회했습니다.",
   "data": [
     {
-      "clothId": 101,
+      "id": 101,
       "name": "네이비 블레이저",
       "category": "OUTER",
       "color": "NAVY",
-      "season": "SPRING_FALL",
-      "styleTags": ["FORMAL", "INTERVIEW"],
+      "fit": "regular",
+      "formality": 5,
+      "material": "울",
+      "pattern": "솔리드",
       "imageUrl": "https://example.com/blazer.jpg"
     },
     {
-      "clothId": 102,
+      "id": 102,
       "name": "화이트 셔츠",
       "category": "TOP",
       "color": "WHITE",
-      "season": "ALL",
-      "styleTags": ["FORMAL"],
+      "fit": "slim",
+      "formality": 4,
+      "material": "코튼",
+      "pattern": null,
       "imageUrl": "https://example.com/shirt.jpg"
     }
   ]
@@ -383,7 +413,7 @@ Response:
 Endpoint:
 
 ```text
-GET /api/v1/clothes/{clothId}
+GET /api/v1/clothes/{id}
 ```
 
 설명:
@@ -397,12 +427,15 @@ Response:
   "status": "success",
   "message": "의류 상세 정보를 조회했습니다.",
   "data": {
-    "clothId": 101,
+    "id": 101,
+    "userId": 1,
     "name": "네이비 블레이저",
     "category": "OUTER",
     "color": "NAVY",
-    "season": "SPRING_FALL",
-    "styleTags": ["FORMAL", "INTERVIEW"],
+    "fit": "regular",
+    "formality": 5,
+    "material": "울",
+    "pattern": "솔리드",
     "imageUrl": "https://example.com/blazer.jpg",
     "createdAt": "2026-04-01T10:10:00Z"
   }
@@ -411,7 +444,7 @@ Response:
 
 예외:
 
-- 존재하지 않는 `clothId`
+- 존재하지 않는 `id`
 - 본인 소유가 아닌 데이터 접근
 
 ### 5.4 옷 수정
@@ -419,7 +452,7 @@ Response:
 Endpoint:
 
 ```text
-PATCH /api/v1/clothes/{clothId}
+PATCH /api/v1/clothes/{id}
 ```
 
 설명:
@@ -431,7 +464,9 @@ Request Body:
 ```json
 {
   "name": "다크 네이비 블레이저",
-  "styleTags": ["FORMAL", "INTERVIEW", "OFFICE"]
+  "fit": "slim",
+  "formality": 5,
+  "material": "울 블렌드"
 }
 ```
 
@@ -442,12 +477,14 @@ Response:
   "status": "success",
   "message": "의류 정보가 수정되었습니다.",
   "data": {
-    "clothId": 101,
+    "id": 101,
     "name": "다크 네이비 블레이저",
     "category": "OUTER",
     "color": "NAVY",
-    "season": "SPRING_FALL",
-    "styleTags": ["FORMAL", "INTERVIEW", "OFFICE"],
+    "fit": "slim",
+    "formality": 5,
+    "material": "울 블렌드",
+    "pattern": "솔리드",
     "imageUrl": "https://example.com/blazer.jpg"
   }
 }
@@ -458,7 +495,7 @@ Response:
 Endpoint:
 
 ```text
-DELETE /api/v1/clothes/{clothId}
+DELETE /api/v1/clothes/{id}
 ```
 
 설명:
@@ -472,7 +509,7 @@ Response:
   "status": "success",
   "message": "의류가 삭제되었습니다.",
   "data": {
-    "clothId": 101
+    "id": 101
   }
 }
 ```
@@ -666,19 +703,19 @@ Response:
     },
     "recommendedItems": [
       {
-        "clothId": 101,
+        "id": 101,
         "name": "네이비 블레이저",
         "category": "OUTER",
         "imageUrl": "https://example.com/blazer.jpg"
       },
       {
-        "clothId": 102,
+        "id": 102,
         "name": "화이트 셔츠",
         "category": "TOP",
         "imageUrl": "https://example.com/shirt.jpg"
       },
       {
-        "clothId": 103,
+        "id": 103,
         "name": "블랙 슬랙스",
         "category": "BOTTOM",
         "imageUrl": "https://example.com/slacks.jpg"
@@ -695,6 +732,19 @@ Response:
 - 로그인 안 됨
 - 옷장 비어 있음
 - AI 응답 실패
+
+환경 변수:
+
+| 변수 | 설명 |
+| --- | --- |
+| `GEMINI_API_KEY` | 서버에서 Gemini API를 호출할 때 사용하는 API 키 |
+| `GEMINI_MODEL` | 코디 추천에 사용할 Gemini 모델. 기본값은 `gemini-2.5-flash` |
+
+구현 메모:
+
+- Gemini API 키는 클라이언트에 노출하지 않고 서버 Route Handler에서만 사용한다.
+- MVP에서는 추천 히스토리를 저장하지 않으므로 `recommendationId`는 `null`일 수 있다.
+- AI 응답 실패, 일시적인 모델 과부하, 잘못된 AI 응답 형식은 `AI_RECOMMENDATION_FAILED`로 반환한다.
 
 ### 8.2 추천 히스토리 조회(Optional)
 
@@ -760,7 +810,7 @@ Response:
     },
     "recommendedItems": [
       {
-        "clothId": 101,
+        "id": 101,
         "name": "네이비 블레이저",
         "category": "OUTER",
         "imageUrl": "https://example.com/blazer.jpg"
@@ -783,27 +833,13 @@ Response:
 - `OUTER`
 - `SHOES`
 
-### 9.2 ClothingSeason
+### 9.2 ClothingFit
 
-- `SPRING`
-- `SUMMER`
-- `FALL`
-- `WINTER`
-- `SPRING_FALL`
-- `ALL`
+- `oversized`
+- `regular`
+- `slim`
 
-### 9.3 StyleTag
-
-- `FORMAL`
-- `CASUAL`
-- `STREET`
-- `DAILY`
-- `SPORTY`
-- `INTERVIEW`
-- `OFFICE`
-- `DATE`
-
-### 9.4 Color
+### 9.3 Color
 
 - `BLACK`
 - `WHITE`
@@ -869,9 +905,9 @@ Clothes:
 
 - `POST /api/v1/clothes`
 - `GET /api/v1/clothes`
-- `GET /api/v1/clothes/{clothId}`
-- `PATCH /api/v1/clothes/{clothId}`
-- `DELETE /api/v1/clothes/{clothId}`
+- `GET /api/v1/clothes/{id}`
+- `PATCH /api/v1/clothes/{id}`
+- `DELETE /api/v1/clothes/{id}`
 
 Upload:
 

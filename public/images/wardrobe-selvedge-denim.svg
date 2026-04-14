@@ -1,0 +1,10 @@
+<svg width="720" height="960" viewBox="0 0 720 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="720" height="960" fill="#F3F4F5"/>
+  <rect x="84" y="72" width="552" height="816" rx="40" fill="#FFFFFF"/>
+  <path d="M250 164H470L506 336L458 790H372L360 480L348 790H262L214 336L250 164Z" fill="#1E3A8A"/>
+  <path d="M336 164H384V790H336V164Z" fill="#172554"/>
+  <path d="M250 164L214 336L174 326L212 150L250 164Z" fill="#172554"/>
+  <path d="M470 164L506 336L546 326L508 150L470 164Z" fill="#172554"/>
+  <line x1="272" y1="244" x2="448" y2="244" stroke="#DC2626" stroke-width="4" stroke-dasharray="8 8"/>
+  <text x="360" y="838" text-anchor="middle" fill="#0060A8" font-family="Arial, sans-serif" font-size="28" font-weight="700">Dummy Denim</text>
+</svg>
