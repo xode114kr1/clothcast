@@ -6,6 +6,7 @@ import { ArrowRight, CalendarDays, Shirt, Sparkles, User } from "lucide-react";
 import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import type { RecommendedOutfitItem } from "@/lib/recommendations/recommendation-types";
+import { ProfileActions } from "@/components/profile/profile-actions";
 
 type RecentRecommendation = {
   recommendationId: number;
@@ -190,6 +191,7 @@ export default async function ProfilePage() {
               관리합니다.
             </p>
           </div>
+          <ProfileActions />
           <dl className="grid max-w-2xl grid-cols-1 gap-4 sm:grid-cols-2">
             <div
               className="rounded-[var(--radius-md)] px-6 py-5"
