@@ -5,13 +5,45 @@ import { ArrowRight, CalendarDays, Shirt, Sparkles, User } from "lucide-react";
 
 import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
+import type { RecommendedOutfitItem } from "@/lib/recommendations/recommendation-types";
+
+type RecentRecommendation = {
+  recommendationId: number;
+  prompt: string;
+  reason: string;
+  styleTone: string;
+  recommendedItems: RecommendedOutfitItem[];
+  createdAt: Date;
+};
 
 type ProfileData = {
   email: string;
   nickname: string;
   createdAt: Date;
   clothesCount: number;
+  recommendationsCount: number;
+  recentRecommendations: RecentRecommendation[];
 };
+
+function isRecommendedOutfitItems(value: unknown): value is RecommendedOutfitItem[] {
+  return (
+    Array.isArray(value) &&
+    value.every((item) => {
+      if (typeof item !== "object" || item === null || Array.isArray(item)) {
+        return false;
+      }
+
+      const payload = item as Record<string, unknown>;
+
+      return (
+        typeof payload.id === "number" &&
+        typeof payload.name === "string" &&
+        typeof payload.category === "string" &&
+        typeof payload.imageUrl === "string"
+      );
+    })
+  );
+}
 
 async function getProfileData(): Promise<ProfileData | null> {
   const cookieStore = await cookies();
@@ -36,6 +68,21 @@ async function getProfileData(): Promise<ProfileData | null> {
       _count: {
         select: {
           clothes: true,
+          recommendations: true,
+        },
+      },
+      recommendations: {
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 3,
+        select: {
+          id: true,
+          prompt: true,
+          reason: true,
+          styleTone: true,
+          recommendedItems: true,
+          createdAt: true,
         },
       },
     },
@@ -50,6 +97,17 @@ async function getProfileData(): Promise<ProfileData | null> {
     nickname: user.nickname,
     createdAt: user.createdAt,
     clothesCount: user._count.clothes,
+    recommendationsCount: user._count.recommendations,
+    recentRecommendations: user.recommendations.map((recommendation) => ({
+      recommendationId: recommendation.id,
+      prompt: recommendation.prompt,
+      reason: recommendation.reason,
+      styleTone: recommendation.styleTone,
+      recommendedItems: isRecommendedOutfitItems(recommendation.recommendedItems)
+        ? recommendation.recommendedItems
+        : [],
+      createdAt: recommendation.createdAt,
+    })),
   };
 }
 
@@ -66,6 +124,14 @@ function getAvatarLabel(profile: ProfileData) {
     profile.nickname.trim().charAt(0).toUpperCase() ||
     profile.email.charAt(0).toUpperCase()
   );
+}
+
+function getRecommendationSummary(items: RecommendedOutfitItem[]) {
+  if (items.length === 0) {
+    return "추천 아이템 정보 없음";
+  }
+
+  return items.map((item) => item.name).join(" / ");
 }
 
 export default async function ProfilePage() {
@@ -173,7 +239,7 @@ export default async function ProfilePage() {
               className="text-6xl font-bold"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              0
+              {profile.recommendationsCount}
             </p>
             <p className="flex items-center gap-2 text-sm font-bold text-[var(--primary)]">
               추천 받으러 가기
@@ -208,19 +274,53 @@ export default async function ProfilePage() {
           </Link>
         </div>
 
-        <div
-          className="flex flex-col items-center justify-center rounded-[var(--radius-xl)] px-8 py-16 text-center"
-          style={{ backgroundColor: "var(--surface-container-low)" }}
-        >
-          <User className="h-12 w-12 text-[rgb(0_96_168_/_0.35)]" strokeWidth={1.7} />
-          <p className="mt-6 text-2xl font-extrabold text-[var(--foreground)]">
-            아직 저장된 추천 기록이 없습니다.
-          </p>
-          <p className="mx-auto mt-3 max-w-lg text-[#404753]">
-            현재 추천 기능은 결과 저장 없이 바로 보여주는 MVP 흐름입니다. 추천 기록
-            저장 기능이 추가되면 이곳에서 최근 코디를 다시 볼 수 있습니다.
-          </p>
-        </div>
+        {profile.recentRecommendations.length > 0 ? (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {profile.recentRecommendations.map((recommendation) => (
+              <article
+                key={recommendation.recommendationId}
+                className="rounded-[var(--radius-xl)] p-8 shadow-[var(--shadow-ambient-sm)]"
+                style={{ backgroundColor: "var(--surface-container-lowest)" }}
+              >
+                <p className="text-xs font-bold uppercase tracking-widest text-[var(--primary)]">
+                  {formatJoinedDate(recommendation.createdAt)}
+                </p>
+                <h3
+                  className="mt-4 text-xl font-bold text-[var(--foreground)]"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  {recommendation.styleTone}
+                </h3>
+                <p className="mt-2 line-clamp-2 text-sm font-semibold text-[#404753]">
+                  {recommendation.prompt}
+                </p>
+                <p className="mt-6 text-sm leading-relaxed text-[#404753]">
+                  {getRecommendationSummary(recommendation.recommendedItems)}
+                </p>
+                <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-[#707884]">
+                  {recommendation.reason}
+                </p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div
+            className="flex flex-col items-center justify-center rounded-[var(--radius-xl)] px-8 py-16 text-center"
+            style={{ backgroundColor: "var(--surface-container-low)" }}
+          >
+            <User
+              className="h-12 w-12 text-[rgb(0_96_168_/_0.35)]"
+              strokeWidth={1.7}
+            />
+            <p className="mt-6 text-2xl font-extrabold text-[var(--foreground)]">
+              아직 저장된 추천 기록이 없습니다.
+            </p>
+            <p className="mx-auto mt-3 max-w-lg text-[#404753]">
+              오늘의 일정과 날씨를 바탕으로 추천을 받으면 이곳에서 최근 코디를
+              다시 볼 수 있습니다.
+            </p>
+          </div>
+        )}
       </section>
     </main>
   );

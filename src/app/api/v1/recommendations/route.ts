@@ -4,7 +4,11 @@ import { NextResponse } from "next/server";
 import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
 import { generateGeminiText } from "@/lib/ai/gemini";
 import { prisma } from "@/lib/prisma";
-import type { RecommendationResponseData } from "@/lib/recommendations/recommendation-types";
+import type {
+  RecommendationHistoryItem,
+  RecommendationResponseData,
+  RecommendedOutfitItem,
+} from "@/lib/recommendations/recommendation-types";
 import { validateCreateRecommendationInput } from "@/lib/recommendations/recommendation-validation";
 import type { CurrentWeatherData } from "@/lib/weather/weather-types";
 
@@ -53,6 +57,21 @@ function successResponse(data: RecommendationResponseData, init?: ResponseInit) 
     {
       status: "success",
       message: "코디 추천이 생성되었습니다.",
+      data,
+    },
+    init,
+  );
+}
+
+// 추천 히스토리 조회 성공 응답을 API 공통 형식으로 만든다.
+function listSuccessResponse(
+  data: RecommendationHistoryItem[],
+  init?: ResponseInit,
+) {
+  return NextResponse.json(
+    {
+      status: "success",
+      message: "추천 기록을 조회했습니다.",
       data,
     },
     init,
@@ -193,6 +212,27 @@ function mapRecommendedItems(
     }));
 }
 
+// DB JSON 필드가 추천 아이템 배열 형태인지 확인한다.
+function isRecommendedOutfitItems(value: unknown): value is RecommendedOutfitItem[] {
+  return (
+    Array.isArray(value) &&
+    value.every((item) => {
+      if (typeof item !== "object" || item === null || Array.isArray(item)) {
+        return false;
+      }
+
+      const payload = item as Record<string, unknown>;
+
+      return (
+        typeof payload.id === "number" &&
+        typeof payload.name === "string" &&
+        typeof payload.category === "string" &&
+        typeof payload.imageUrl === "string"
+      );
+    })
+  );
+}
+
 // 인증된 사용자의 옷장과 날씨, 프롬프트를 조합해 Gemini 코디 추천을 생성한다.
 export async function POST(request: Request) {
   const userId = await getSessionUserId();
@@ -277,16 +317,31 @@ export async function POST(request: Request) {
       });
     }
 
+    const weatherSummary = {
+      temperature: validation.data.weather.temperature,
+      feelsLike: validation.data.weather.feelsLike,
+      weather: validation.data.weather.weather,
+      location: validation.data.weather.location,
+    };
+    const savedRecommendation = await prisma.recommendation.create({
+      data: {
+        userId,
+        prompt: validation.data.prompt,
+        weatherSummary,
+        recommendedItems,
+        reason: recommendation.reason,
+        styleTone: recommendation.styleTone,
+      },
+      select: {
+        id: true,
+      },
+    });
+
     return successResponse(
       {
-        recommendationId: null,
+        recommendationId: savedRecommendation.id,
         prompt: validation.data.prompt,
-        weatherSummary: {
-          temperature: validation.data.weather.temperature,
-          feelsLike: validation.data.weather.feelsLike,
-          weather: validation.data.weather.weather,
-          location: validation.data.weather.location,
-        },
+        weatherSummary,
         recommendedItems,
         reason: recommendation.reason,
         styleTone: recommendation.styleTone,
@@ -295,6 +350,51 @@ export async function POST(request: Request) {
     );
   } catch {
     return errorResponse("AI 코디 추천 생성에 실패했습니다.", "AI_RECOMMENDATION_FAILED", {
+      status: 500,
+    });
+  }
+}
+
+// 인증된 사용자의 추천 히스토리를 최신순으로 조회한다.
+export async function GET() {
+  const userId = await getSessionUserId();
+
+  if (!userId) {
+    return errorResponse("로그인이 필요합니다.", "UNAUTHORIZED", {
+      status: 401,
+    });
+  }
+
+  try {
+    const recommendations = await prisma.recommendation.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      take: 10,
+      select: {
+        id: true,
+        prompt: true,
+        reason: true,
+        styleTone: true,
+        recommendedItems: true,
+        createdAt: true,
+      },
+    });
+
+    return listSuccessResponse(
+      recommendations.map((recommendation) => ({
+        recommendationId: recommendation.id,
+        prompt: recommendation.prompt,
+        reason: recommendation.reason,
+        styleTone: recommendation.styleTone,
+        recommendedItems: isRecommendedOutfitItems(recommendation.recommendedItems)
+          ? recommendation.recommendedItems
+          : [],
+        createdAt: recommendation.createdAt.toISOString(),
+      })),
+      { status: 200 },
+    );
+  } catch {
+    return errorResponse("추천 기록 조회 중 오류가 발생했습니다.", "SERVER_ERROR", {
       status: 500,
     });
   }
