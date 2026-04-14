@@ -40,6 +40,19 @@ type GeminiRecommendation = {
   styleTone: string;
 };
 
+type SavedRecommendationRow = {
+  id: number;
+};
+
+type RecommendationHistoryRow = {
+  id: number;
+  prompt: string;
+  reason: string;
+  styleTone: string;
+  recommendedItems: unknown;
+  createdAt: Date;
+};
+
 const RECOMMENDATION_SYSTEM_INSTRUCTION = [
   "당신은 ClothCast의 한국어 코디 추천 스타일리스트입니다.",
   "반드시 사용자의 옷장 데이터에 있는 id만 recommendedItemIds에 사용하세요.",
@@ -233,6 +246,49 @@ function isRecommendedOutfitItems(value: unknown): value is RecommendedOutfitIte
   );
 }
 
+// 히스토리 저장은 선택 기능이므로 저장 실패가 추천 응답 실패로 번지지 않게 한다.
+async function saveRecommendationHistory({
+  userId,
+  prompt,
+  weatherSummary,
+  recommendedItems,
+  reason,
+  styleTone,
+}: {
+  userId: number;
+  prompt: string;
+  weatherSummary: RecommendationResponseData["weatherSummary"];
+  recommendedItems: RecommendedOutfitItem[];
+  reason: string;
+  styleTone: string;
+}) {
+  try {
+    const [savedRecommendation] = await prisma.$queryRaw<SavedRecommendationRow[]>`
+      INSERT INTO "Recommendation" (
+        "userId",
+        "prompt",
+        "weatherSummary",
+        "recommendedItems",
+        "reason",
+        "styleTone"
+      )
+      VALUES (
+        ${userId},
+        ${prompt},
+        ${JSON.stringify(weatherSummary)}::jsonb,
+        ${JSON.stringify(recommendedItems)}::jsonb,
+        ${reason},
+        ${styleTone}
+      )
+      RETURNING "id"
+    `;
+
+    return savedRecommendation?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
 // 인증된 사용자의 옷장과 날씨, 프롬프트를 조합해 Gemini 코디 추천을 생성한다.
 export async function POST(request: Request) {
   const userId = await getSessionUserId();
@@ -323,23 +379,18 @@ export async function POST(request: Request) {
       weather: validation.data.weather.weather,
       location: validation.data.weather.location,
     };
-    const savedRecommendation = await prisma.recommendation.create({
-      data: {
-        userId,
-        prompt: validation.data.prompt,
-        weatherSummary,
-        recommendedItems,
-        reason: recommendation.reason,
-        styleTone: recommendation.styleTone,
-      },
-      select: {
-        id: true,
-      },
+    const recommendationId = await saveRecommendationHistory({
+      userId,
+      prompt: validation.data.prompt,
+      weatherSummary,
+      recommendedItems,
+      reason: recommendation.reason,
+      styleTone: recommendation.styleTone,
     });
 
     return successResponse(
       {
-        recommendationId: savedRecommendation.id,
+        recommendationId,
         prompt: validation.data.prompt,
         weatherSummary,
         recommendedItems,
@@ -366,19 +417,19 @@ export async function GET() {
   }
 
   try {
-    const recommendations = await prisma.recommendation.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
-      take: 10,
-      select: {
-        id: true,
-        prompt: true,
-        reason: true,
-        styleTone: true,
-        recommendedItems: true,
-        createdAt: true,
-      },
-    });
+    const recommendations = await prisma.$queryRaw<RecommendationHistoryRow[]>`
+      SELECT
+        "id",
+        "prompt",
+        "reason",
+        "styleTone",
+        "recommendedItems",
+        "createdAt"
+      FROM "Recommendation"
+      WHERE "userId" = ${userId}
+      ORDER BY "createdAt" DESC
+      LIMIT 10
+    `;
 
     return listSuccessResponse(
       recommendations.map((recommendation) => ({

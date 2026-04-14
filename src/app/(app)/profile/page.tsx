@@ -25,6 +25,15 @@ type ProfileData = {
   recentRecommendations: RecentRecommendation[];
 };
 
+type RecommendationHistoryRow = {
+  id: number;
+  prompt: string;
+  reason: string;
+  styleTone: string;
+  recommendedItems: unknown;
+  createdAt: Date;
+};
+
 function isRecommendedOutfitItems(value: unknown): value is RecommendedOutfitItem[] {
   return (
     Array.isArray(value) &&
@@ -62,27 +71,13 @@ async function getProfileData(): Promise<ProfileData | null> {
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
     select: {
+      id: true,
       email: true,
       nickname: true,
       createdAt: true,
       _count: {
         select: {
           clothes: true,
-          recommendations: true,
-        },
-      },
-      recommendations: {
-        orderBy: {
-          createdAt: "desc",
-        },
-        take: 3,
-        select: {
-          id: true,
-          prompt: true,
-          reason: true,
-          styleTone: true,
-          recommendedItems: true,
-          createdAt: true,
         },
       },
     },
@@ -92,13 +87,34 @@ async function getProfileData(): Promise<ProfileData | null> {
     return null;
   }
 
+  const [recommendationsCount, recentRecommendations] = await Promise.all([
+    prisma.$queryRaw<[{ count: bigint }]>`
+      SELECT COUNT(*)::bigint AS count
+      FROM "Recommendation"
+      WHERE "userId" = ${user.id}
+    `,
+    prisma.$queryRaw<RecommendationHistoryRow[]>`
+      SELECT
+        "id",
+        "prompt",
+        "reason",
+        "styleTone",
+        "recommendedItems",
+        "createdAt"
+      FROM "Recommendation"
+      WHERE "userId" = ${user.id}
+      ORDER BY "createdAt" DESC
+      LIMIT 3
+    `,
+  ]).catch(() => [null, [] as RecommendationHistoryRow[]] as const);
+
   return {
     email: user.email,
     nickname: user.nickname,
     createdAt: user.createdAt,
     clothesCount: user._count.clothes,
-    recommendationsCount: user._count.recommendations,
-    recentRecommendations: user.recommendations.map((recommendation) => ({
+    recommendationsCount: Number(recommendationsCount?.[0]?.count ?? 0),
+    recentRecommendations: recentRecommendations.map((recommendation) => ({
       recommendationId: recommendation.id,
       prompt: recommendation.prompt,
       reason: recommendation.reason,
