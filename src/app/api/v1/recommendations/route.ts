@@ -4,7 +4,11 @@ import { NextResponse } from "next/server";
 import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
 import { generateGeminiText } from "@/lib/ai/gemini";
 import { prisma } from "@/lib/prisma";
-import type { RecommendationResponseData } from "@/lib/recommendations/recommendation-types";
+import type {
+  RecommendationHistoryItem,
+  RecommendationResponseData,
+  RecommendedOutfitItem,
+} from "@/lib/recommendations/recommendation-types";
 import { validateCreateRecommendationInput } from "@/lib/recommendations/recommendation-validation";
 import type { CurrentWeatherData } from "@/lib/weather/weather-types";
 
@@ -36,6 +40,19 @@ type GeminiRecommendation = {
   styleTone: string;
 };
 
+type SavedRecommendationRow = {
+  id: number;
+};
+
+type RecommendationHistoryRow = {
+  id: number;
+  prompt: string;
+  reason: string;
+  styleTone: string;
+  recommendedItems: unknown;
+  createdAt: Date;
+};
+
 const RECOMMENDATION_SYSTEM_INSTRUCTION = [
   "당신은 ClothCast의 한국어 코디 추천 스타일리스트입니다.",
   "반드시 사용자의 옷장 데이터에 있는 id만 recommendedItemIds에 사용하세요.",
@@ -53,6 +70,21 @@ function successResponse(data: RecommendationResponseData, init?: ResponseInit) 
     {
       status: "success",
       message: "코디 추천이 생성되었습니다.",
+      data,
+    },
+    init,
+  );
+}
+
+// 추천 히스토리 조회 성공 응답을 API 공통 형식으로 만든다.
+function listSuccessResponse(
+  data: RecommendationHistoryItem[],
+  init?: ResponseInit,
+) {
+  return NextResponse.json(
+    {
+      status: "success",
+      message: "추천 기록을 조회했습니다.",
       data,
     },
     init,
@@ -193,6 +225,70 @@ function mapRecommendedItems(
     }));
 }
 
+// DB JSON 필드가 추천 아이템 배열 형태인지 확인한다.
+function isRecommendedOutfitItems(value: unknown): value is RecommendedOutfitItem[] {
+  return (
+    Array.isArray(value) &&
+    value.every((item) => {
+      if (typeof item !== "object" || item === null || Array.isArray(item)) {
+        return false;
+      }
+
+      const payload = item as Record<string, unknown>;
+
+      return (
+        typeof payload.id === "number" &&
+        typeof payload.name === "string" &&
+        typeof payload.category === "string" &&
+        typeof payload.imageUrl === "string"
+      );
+    })
+  );
+}
+
+// 히스토리 저장은 선택 기능이므로 저장 실패가 추천 응답 실패로 번지지 않게 한다.
+async function saveRecommendationHistory({
+  userId,
+  prompt,
+  weatherSummary,
+  recommendedItems,
+  reason,
+  styleTone,
+}: {
+  userId: number;
+  prompt: string;
+  weatherSummary: RecommendationResponseData["weatherSummary"];
+  recommendedItems: RecommendedOutfitItem[];
+  reason: string;
+  styleTone: string;
+}) {
+  try {
+    const [savedRecommendation] = await prisma.$queryRaw<SavedRecommendationRow[]>`
+      INSERT INTO "Recommendation" (
+        "userId",
+        "prompt",
+        "weatherSummary",
+        "recommendedItems",
+        "reason",
+        "styleTone"
+      )
+      VALUES (
+        ${userId},
+        ${prompt},
+        ${JSON.stringify(weatherSummary)}::jsonb,
+        ${JSON.stringify(recommendedItems)}::jsonb,
+        ${reason},
+        ${styleTone}
+      )
+      RETURNING "id"
+    `;
+
+    return savedRecommendation?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
 // 인증된 사용자의 옷장과 날씨, 프롬프트를 조합해 Gemini 코디 추천을 생성한다.
 export async function POST(request: Request) {
   const userId = await getSessionUserId();
@@ -277,16 +373,26 @@ export async function POST(request: Request) {
       });
     }
 
+    const weatherSummary = {
+      temperature: validation.data.weather.temperature,
+      feelsLike: validation.data.weather.feelsLike,
+      weather: validation.data.weather.weather,
+      location: validation.data.weather.location,
+    };
+    const recommendationId = await saveRecommendationHistory({
+      userId,
+      prompt: validation.data.prompt,
+      weatherSummary,
+      recommendedItems,
+      reason: recommendation.reason,
+      styleTone: recommendation.styleTone,
+    });
+
     return successResponse(
       {
-        recommendationId: null,
+        recommendationId,
         prompt: validation.data.prompt,
-        weatherSummary: {
-          temperature: validation.data.weather.temperature,
-          feelsLike: validation.data.weather.feelsLike,
-          weather: validation.data.weather.weather,
-          location: validation.data.weather.location,
-        },
+        weatherSummary,
         recommendedItems,
         reason: recommendation.reason,
         styleTone: recommendation.styleTone,
@@ -295,6 +401,51 @@ export async function POST(request: Request) {
     );
   } catch {
     return errorResponse("AI 코디 추천 생성에 실패했습니다.", "AI_RECOMMENDATION_FAILED", {
+      status: 500,
+    });
+  }
+}
+
+// 인증된 사용자의 추천 히스토리를 최신순으로 조회한다.
+export async function GET() {
+  const userId = await getSessionUserId();
+
+  if (!userId) {
+    return errorResponse("로그인이 필요합니다.", "UNAUTHORIZED", {
+      status: 401,
+    });
+  }
+
+  try {
+    const recommendations = await prisma.$queryRaw<RecommendationHistoryRow[]>`
+      SELECT
+        "id",
+        "prompt",
+        "reason",
+        "styleTone",
+        "recommendedItems",
+        "createdAt"
+      FROM "Recommendation"
+      WHERE "userId" = ${userId}
+      ORDER BY "createdAt" DESC
+      LIMIT 10
+    `;
+
+    return listSuccessResponse(
+      recommendations.map((recommendation) => ({
+        recommendationId: recommendation.id,
+        prompt: recommendation.prompt,
+        reason: recommendation.reason,
+        styleTone: recommendation.styleTone,
+        recommendedItems: isRecommendedOutfitItems(recommendation.recommendedItems)
+          ? recommendation.recommendedItems
+          : [],
+        createdAt: recommendation.createdAt.toISOString(),
+      })),
+      { status: 200 },
+    );
+  } catch {
+    return errorResponse("추천 기록 조회 중 오류가 발생했습니다.", "SERVER_ERROR", {
       status: 500,
     });
   }

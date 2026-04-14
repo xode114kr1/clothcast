@@ -18,3 +18,12 @@ export type RecommendationResponseData = {
   reason: string;
   styleTone: string;
 };
+
+export type RecommendationHistoryItem = {
+  recommendationId: number;
+  prompt: string;
+  reason: string;
+  styleTone: string;
+  recommendedItems: RecommendedOutfitItem[];
+  createdAt: string;
+};

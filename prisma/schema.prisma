@@ -26,13 +26,14 @@ enum ClothingFit {
 }
 
 model User {
-  id           Int       @id @default(autoincrement())
-  email        String    @unique
-  nickname     String
-  passwordHash String
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  clothes      Clothes[]
+  id              Int              @id @default(autoincrement())
+  email           String           @unique
+  nickname        String
+  passwordHash    String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  clothes         Clothes[]
+  recommendations Recommendation[]
 }
 
 model Clothes {
@@ -52,4 +53,19 @@ model Clothes {
   @@index([userId])
   @@index([category])
   @@index([fit])
+}
+
+model Recommendation {
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prompt           String
+  weatherSummary   Json
+  recommendedItems Json
+  reason           String
+  styleTone        String
+  createdAt        DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
 }
