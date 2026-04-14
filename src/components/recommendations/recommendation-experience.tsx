@@ -19,7 +19,11 @@ import type { RecommendationResponseData } from "@/lib/recommendations/recommend
 type RecommendationApiResponse = {
   status: "success" | "error";
   message: string;
-  data?: RecommendationResponseData | { code?: string };
+  data?: RecommendationResponseData | RecommendationApiErrorData;
+};
+
+type RecommendationApiErrorData = {
+  code?: string;
 };
 
 // 알 수 없는 API 응답 값이 추천 결과 데이터 형태인지 확인한다.
@@ -38,8 +42,34 @@ function isRecommendationData(value: unknown): value is RecommendationResponseDa
   );
 }
 
+// 추천 API 에러 코드를 사용자에게 보여줄 안내 문구로 바꾼다.
+function getRecommendationErrorMessage(code: string) {
+  const messages: Record<string, string> = {
+    AI_RECOMMENDATION_FAILED:
+      "추천 생성이 지연되고 있습니다. 잠시 후 다시 시도해주세요.",
+    EMPTY_WARDROBE: "등록된 옷이 없어 추천을 만들 수 없습니다.",
+    INVALID_REQUEST: "오늘의 일정과 날씨 정보를 다시 확인해주세요.",
+    UNAUTHORIZED: "로그인 후 추천을 받을 수 있습니다.",
+    USER_NOT_FOUND: "사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요.",
+  };
+
+  return messages[code] ?? "코디 추천을 생성하지 못했습니다.";
+}
+
 // API 실패 응답에서 사용자에게 보여줄 메시지를 꺼낸다.
 function getResponseMessage(data: unknown) {
+  if (
+    typeof data === "object" &&
+    data !== null &&
+    "data" in data &&
+    typeof data.data === "object" &&
+    data.data !== null &&
+    "code" in data.data &&
+    typeof data.data.code === "string"
+  ) {
+    return getRecommendationErrorMessage(data.data.code);
+  }
+
   if (
     typeof data === "object" &&
     data !== null &&
