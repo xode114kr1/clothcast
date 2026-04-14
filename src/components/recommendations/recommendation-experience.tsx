@@ -13,36 +13,16 @@ import { FormEvent, useState } from "react";
 
 import { useCurrentWeather } from "@/components/recommendations/current-weather-provider";
 import { WeatherSelectionSummary } from "@/components/recommendations/weather-selection-summary";
-
-type RecommendedItem = {
-  id: number;
-  name: string;
-  category: string;
-  imageUrl: string;
-};
-
-type RecommendationData = {
-  recommendationId: number | null;
-  prompt: string;
-  weatherSummary: {
-    temperature: number;
-    feelsLike: number;
-    weather: string;
-    location: string;
-  };
-  recommendedItems: RecommendedItem[];
-  reason: string;
-  styleTone: string;
-};
+import type { RecommendationResponseData } from "@/lib/recommendations/recommendation-types";
 
 type RecommendationApiResponse = {
   status: "success" | "error";
   message: string;
-  data?: RecommendationData | { code?: string };
+  data?: RecommendationResponseData | { code?: string };
 };
 
 // 알 수 없는 API 응답 값이 추천 결과 데이터 형태인지 확인한다.
-function isRecommendationData(value: unknown): value is RecommendationData {
+function isRecommendationData(value: unknown): value is RecommendationResponseData {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
     return false;
   }
@@ -118,7 +98,7 @@ export function RecommendationExperience() {
   const weatherState = useCurrentWeather();
   const [prompt, setPrompt] = useState("");
   const [recommendation, setRecommendation] =
-    useState<RecommendationData | null>(null);
+    useState<RecommendationResponseData | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 

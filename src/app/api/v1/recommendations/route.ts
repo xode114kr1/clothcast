@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
 import { generateGeminiText } from "@/lib/ai/gemini";
 import { prisma } from "@/lib/prisma";
+import type { RecommendationResponseData } from "@/lib/recommendations/recommendation-types";
 import { validateCreateRecommendationInput } from "@/lib/recommendations/recommendation-validation";
 import type { CurrentWeatherData } from "@/lib/weather/weather-types";
 
@@ -27,27 +28,6 @@ type WardrobeItem = {
   material: string | null;
   pattern: string | null;
   imageUrl: string;
-};
-
-type RecommendedItem = {
-  id: number;
-  name: string;
-  category: string;
-  imageUrl: string;
-};
-
-type RecommendationResponseData = {
-  recommendationId: number | null;
-  prompt: string;
-  weatherSummary: {
-    temperature: number;
-    feelsLike: number;
-    weather: string;
-    location: string;
-  };
-  recommendedItems: RecommendedItem[];
-  reason: string;
-  styleTone: string;
 };
 
 type GeminiRecommendation = {
