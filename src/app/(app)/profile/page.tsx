@@ -1,170 +1,227 @@
-import Image from "next/image";
-import {
-  ArrowRight,
-  Pencil,
-  Shirt,
-  Sparkles,
-} from "lucide-react";
+import { cookies } from "next/headers";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { ArrowRight, CalendarDays, Shirt, Sparkles, User } from "lucide-react";
 
-const recentRecommendations = [
-  {
-    date: "2024년 10월 24일",
-    title: "가을 린넨 레이어링",
-    description:
-      "선선한 날씨에 맞춰 크림 린넨과 슬레이트 그레이 치노를 가볍게 조합했습니다.",
-    src: "/images/profile-rec-linen-layering.svg",
-    alt: "가을 코디 추천 플랫레이 예시 이미지",
-  },
-  {
-    date: "2024년 10월 22일",
-    title: "어반 누아르 이브닝",
-    description:
-      "텍스처가 있는 니트와 광택 있는 가죽으로 완성한 세련된 도심형 코디입니다.",
-    src: "/images/profile-rec-urban-noir.svg",
-    alt: "저녁 코디 추천 예시 이미지",
-  },
-  {
-    date: "2024년 10월 19일",
-    title: "부드러운 톤온톤 주말",
-    description:
-      "세이지와 오트 컬러로 편안함과 단정한 실루엣을 함께 살린 주말 코디입니다.",
-    src: "/images/profile-rec-soft-tonal.svg",
-    alt: "주말 코디 추천 예시 이미지",
-  },
-];
+import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
+import { prisma } from "@/lib/prisma";
 
-export default function ProfilePage() {
+type ProfileData = {
+  email: string;
+  nickname: string;
+  createdAt: Date;
+  clothesCount: number;
+};
+
+async function getProfileData(): Promise<ProfileData | null> {
+  const cookieStore = await cookies();
+  const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+
+  if (!sessionToken) {
+    return null;
+  }
+
+  const session = await verifySessionToken(sessionToken);
+
+  if (!session) {
+    return null;
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: {
+      email: true,
+      nickname: true,
+      createdAt: true,
+      _count: {
+        select: {
+          clothes: true,
+        },
+      },
+    },
+  });
+
+  if (!user) {
+    return null;
+  }
+
+  return {
+    email: user.email,
+    nickname: user.nickname,
+    createdAt: user.createdAt,
+    clothesCount: user._count.clothes,
+  };
+}
+
+function formatJoinedDate(date: Date) {
+  return new Intl.DateTimeFormat("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(date);
+}
+
+function getAvatarLabel(profile: ProfileData) {
   return (
-    <>
-      <main className="mx-auto max-w-7xl space-y-24 px-8 py-24">
-        <section className="flex flex-col items-center gap-12 md:flex-row md:items-end">
-          <div className="relative">
-            <div
-              className="h-48 w-48 overflow-hidden rounded-[var(--radius-xl)] shadow-2xl"
-              style={{ backgroundColor: "var(--surface-container-highest)" }}
-            >
-              <Image
-                alt="Alex 프로필"
-                className="h-full w-full object-cover"
-                height={192}
-                src="/images/profile-alex.svg"
-                width={192}
-              />
-            </div>
-            <div className="absolute -bottom-4 -right-4 rounded-full bg-[var(--primary)] p-4 text-white shadow-lg">
-              <Pencil className="h-5 w-5" strokeWidth={2.2} />
-            </div>
-          </div>
+    profile.nickname.trim().charAt(0).toUpperCase() ||
+    profile.email.charAt(0).toUpperCase()
+  );
+}
 
-          <div className="flex-1 space-y-2 text-center md:text-left">
-            <span className="text-xs font-bold uppercase tracking-widest text-[var(--primary)]">
-              DIGITAL ATELIER MEMBER
-            </span>
+export default async function ProfilePage() {
+  const profile = await getProfileData();
+
+  if (!profile) {
+    redirect("/login");
+  }
+
+  const joinedDate = formatJoinedDate(profile.createdAt);
+
+  return (
+    <main className="mx-auto max-w-7xl space-y-24 px-8 py-24">
+      <section className="grid grid-cols-1 items-end gap-12 lg:grid-cols-12">
+        <div className="lg:col-span-4">
+          <div
+            className="flex aspect-square max-w-72 items-center justify-center rounded-[var(--radius-xl)] text-8xl font-extrabold text-white shadow-2xl"
+            style={{
+              background: "var(--gradient-hero)",
+              fontFamily: "var(--font-display)",
+            }}
+          >
+            {getAvatarLabel(profile)}
+          </div>
+        </div>
+
+        <div className="space-y-5 lg:col-span-8">
+          <span className="text-xs font-bold uppercase tracking-widest text-[var(--primary)]">
+            DIGITAL ATELIER MEMBER
+          </span>
+          <div className="space-y-3">
             <h1
               className="text-5xl font-extrabold tracking-tighter md:text-7xl"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              Alex
+              {profile.nickname}
             </h1>
-            <p className="max-w-lg text-[#404753]">
-              지속 가능한 소재와 모던한 실루엣을 중심으로 미니멀한 옷장을 관리하고 있습니다.
+            <p className="max-w-2xl text-lg leading-relaxed text-[#404753]">
+              오늘 입을 옷을 더 빠르게 고를 수 있도록 옷장과 추천 흐름을 한곳에서
+              관리합니다.
             </p>
           </div>
-        </section>
+          <dl className="grid max-w-2xl grid-cols-1 gap-4 sm:grid-cols-2">
+            <div
+              className="rounded-[var(--radius-md)] px-6 py-5"
+              style={{ backgroundColor: "var(--surface-container-lowest)" }}
+            >
+              <dt className="text-xs font-bold uppercase tracking-wider text-[#707884]">
+                Email
+              </dt>
+              <dd className="mt-2 break-words font-semibold text-[#404753]">
+                {profile.email}
+              </dd>
+            </div>
+            <div
+              className="rounded-[var(--radius-md)] px-6 py-5"
+              style={{ backgroundColor: "var(--surface-container-lowest)" }}
+            >
+              <dt className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#707884]">
+                <CalendarDays className="h-4 w-4" strokeWidth={1.8} />
+                Joined
+              </dt>
+              <dd className="mt-2 font-semibold text-[#404753]">{joinedDate}</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
 
-        <section className="grid grid-cols-1 gap-8 md:grid-cols-2">
-          <div
-            className="group flex items-center justify-between rounded-[var(--radius-xl)] p-10 transition-all duration-300 hover:bg-[rgb(211_228_255_/_0.2)]"
-            style={{ backgroundColor: "var(--surface-container-lowest)" }}
-          >
-            <div className="space-y-1">
-              <p className="text-xs uppercase tracking-wider text-[#707884]">
-                등록한 옷
-              </p>
-              <p
-                className="text-6xl font-bold"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                42
-              </p>
-            </div>
-            <div className="text-[rgb(0_96_168_/_0.2)] transition-colors group-hover:text-[var(--primary)]">
-              <Shirt className="h-20 w-20" strokeWidth={1.7} />
-            </div>
-          </div>
-
-          <div
-            className="group flex items-center justify-between rounded-[var(--radius-xl)] p-10 transition-all duration-300 hover:bg-[rgb(211_228_255_/_0.2)]"
-            style={{ backgroundColor: "var(--surface-container-lowest)" }}
-          >
-            <div className="space-y-1">
-              <p className="text-xs uppercase tracking-wider text-[#707884]">
-                Recent Picks
-              </p>
-              <p
-                className="text-6xl font-bold"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                5
-              </p>
-            </div>
-            <div className="text-[rgb(0_96_168_/_0.2)] transition-colors group-hover:text-[var(--primary)]">
-              <Sparkles className="h-20 w-20" strokeWidth={1.7} />
-            </div>
-          </div>
-        </section>
-
-        <section className="space-y-12">
-          <div className="flex items-center justify-between">
-            <h2
-              className="text-3xl font-bold tracking-tight"
+      <section className="grid grid-cols-1 gap-8 md:grid-cols-2">
+        <Link
+          className="group flex items-center justify-between rounded-[var(--radius-xl)] p-10 transition-all duration-300 hover:bg-[rgb(211_228_255_/_0.2)]"
+          href="/wardrobe"
+          style={{ backgroundColor: "var(--surface-container-lowest)" }}
+        >
+          <div className="space-y-1">
+            <p className="text-xs uppercase tracking-wider text-[#707884]">
+              등록한 옷
+            </p>
+            <p
+              className="text-6xl font-bold"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              Recent Recommendations
-            </h2>
-            <button className="flex items-center gap-2 font-bold text-[var(--primary)] hover:underline">
-              View History
+              {profile.clothesCount}
+            </p>
+            <p className="flex items-center gap-2 text-sm font-bold text-[var(--primary)]">
+              옷장으로 이동
               <ArrowRight className="h-4 w-4" strokeWidth={2.2} />
-            </button>
+            </p>
           </div>
+          <div className="text-[rgb(0_96_168_/_0.2)] transition-colors group-hover:text-[var(--primary)]">
+            <Shirt className="h-20 w-20" strokeWidth={1.7} />
+          </div>
+        </Link>
 
-          <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
-            {recentRecommendations.map((item) => (
-              <article key={item.title} className="space-y-6">
-                <div
-                  className="group relative aspect-[4/5] overflow-hidden rounded-[var(--radius-xl)]"
-                  style={{ backgroundColor: "var(--surface-container-low)" }}
-                >
-                  <Image
-                    alt={item.alt}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    height={800}
-                    src={item.src}
-                    width={640}
-                  />
-                  <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/40 to-transparent p-8 opacity-0 transition-opacity group-hover:opacity-100">
-                    <span className="font-bold text-white">빠르게 보기</span>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-xs font-bold uppercase tracking-widest text-[var(--primary)]">
-                    {item.date}
-                  </p>
-                  <h3
-                    className="text-xl font-bold"
-                    style={{ fontFamily: "var(--font-display)" }}
-                  >
-                    {item.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed text-[#404753]">
-                    {item.description}
-                  </p>
-                </div>
-              </article>
-            ))}
+        <Link
+          className="group flex items-center justify-between rounded-[var(--radius-xl)] p-10 transition-all duration-300 hover:bg-[rgb(211_228_255_/_0.2)]"
+          href="/recommendations"
+          style={{ backgroundColor: "var(--surface-container-lowest)" }}
+        >
+          <div className="space-y-1">
+            <p className="text-xs uppercase tracking-wider text-[#707884]">
+              Recent Picks
+            </p>
+            <p
+              className="text-6xl font-bold"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              0
+            </p>
+            <p className="flex items-center gap-2 text-sm font-bold text-[var(--primary)]">
+              추천 받으러 가기
+              <ArrowRight className="h-4 w-4" strokeWidth={2.2} />
+            </p>
           </div>
-        </section>
-      </main>
-    </>
+          <div className="text-[rgb(0_96_168_/_0.2)] transition-colors group-hover:text-[var(--primary)]">
+            <Sparkles className="h-20 w-20" strokeWidth={1.7} />
+          </div>
+        </Link>
+      </section>
+
+      <section className="space-y-8">
+        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-widest text-[var(--primary)] opacity-70">
+              Recommendation History
+            </span>
+            <h2
+              className="mt-2 text-3xl font-bold tracking-tight"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              최근 추천 기록
+            </h2>
+          </div>
+          <Link
+            className="inline-flex items-center gap-2 font-bold text-[var(--primary)]"
+            href="/recommendations"
+          >
+            새 추천 받기
+            <ArrowRight className="h-4 w-4" strokeWidth={2.2} />
+          </Link>
+        </div>
+
+        <div
+          className="flex flex-col items-center justify-center rounded-[var(--radius-xl)] px-8 py-16 text-center"
+          style={{ backgroundColor: "var(--surface-container-low)" }}
+        >
+          <User className="h-12 w-12 text-[rgb(0_96_168_/_0.35)]" strokeWidth={1.7} />
+          <p className="mt-6 text-2xl font-extrabold text-[var(--foreground)]">
+            아직 저장된 추천 기록이 없습니다.
+          </p>
+          <p className="mx-auto mt-3 max-w-lg text-[#404753]">
+            현재 추천 기능은 결과 저장 없이 바로 보여주는 MVP 흐름입니다. 추천 기록
+            저장 기능이 추가되면 이곳에서 최근 코디를 다시 볼 수 있습니다.
+          </p>
+        </div>
+      </section>
+    </main>
   );
 }
