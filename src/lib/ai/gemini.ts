@@ -18,6 +18,9 @@ type GeminiGenerateContentResponse = {
 export type GenerateGeminiTextInput = {
   prompt: string;
   systemInstruction?: string;
+  maxOutputTokens?: number;
+  responseMimeType?: "application/json" | "text/plain";
+  thinkingBudget?: number;
   temperature?: number;
 };
 
@@ -55,8 +58,11 @@ function extractGeminiText(data: GeminiGenerateContentResponse) {
 }
 
 export async function generateGeminiText({
+  maxOutputTokens,
   prompt,
+  responseMimeType,
   systemInstruction,
+  thinkingBudget,
   temperature = 0.4,
 }: GenerateGeminiTextInput) {
   const response = await fetch(buildGenerateContentUrl(), {
@@ -80,6 +86,15 @@ export async function generateGeminiText({
         },
       ],
       generationConfig: {
+        ...(maxOutputTokens ? { maxOutputTokens } : {}),
+        ...(responseMimeType ? { responseMimeType } : {}),
+        ...(thinkingBudget !== undefined
+          ? {
+              thinkingConfig: {
+                thinkingBudget,
+              },
+            }
+          : {}),
         temperature,
       },
     }),

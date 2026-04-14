@@ -61,6 +61,7 @@ const RECOMMENDATION_SYSTEM_INSTRUCTION = [
   "반드시 사용자의 옷장 데이터에 있는 id만 사용해 코디를 추천하세요.",
   "오늘 날씨와 사용자의 일정/상황 프롬프트를 함께 고려하세요.",
   "완성된 코디가 되도록 상의, 하의, 신발을 우선 포함하고 필요하면 아우터를 포함하세요.",
+  "사용자 옷장에 특정 카테고리 옷이 없으면 보유한 옷만으로 추천하세요.",
   "응답은 설명 없이 JSON 객체 하나만 반환하세요.",
 ].join("\n");
 
@@ -260,12 +261,15 @@ export async function POST(request: Request) {
     }
 
     const geminiText = await generateGeminiText({
+      maxOutputTokens: 1024,
+      responseMimeType: "application/json",
       systemInstruction: RECOMMENDATION_SYSTEM_INSTRUCTION,
       prompt: buildRecommendationPrompt({
         prompt: validation.data.prompt,
         weather: validation.data.weather,
         wardrobe,
       }),
+      thinkingBudget: 0,
       temperature: 0.3,
     });
     const recommendation = parseGeminiRecommendation(geminiText);
