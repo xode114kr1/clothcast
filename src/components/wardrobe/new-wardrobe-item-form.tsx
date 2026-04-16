@@ -91,10 +91,9 @@ export function NewWardrobeItemForm() {
       </div>
 
       <div
-        className="rounded-[var(--radius-xl)] border p-8 lg:col-span-7 lg:p-10"
+        className="rounded-[var(--radius-xl)] p-8 lg:col-span-7 lg:p-10"
         style={{
           backgroundColor: "var(--surface-container-lowest)",
-          borderColor: "rgb(191 199 213 / 0.1)",
           boxShadow: "var(--shadow-ambient-sm)",
         }}
       >

@@ -58,7 +58,7 @@ export function WardrobeItemFormFields({
                 type="radio"
                 value={category.value}
               />
-              <span className="block rounded-full border border-[#bfc7d5] px-6 py-2 text-sm font-semibold transition-all peer-checked:border-[var(--primary)] peer-checked:bg-[var(--primary)] peer-checked:text-white">
+              <span className="block rounded-full bg-[var(--surface-container-low)] px-6 py-2 text-sm font-semibold transition-all peer-checked:bg-[var(--primary)] peer-checked:text-white">
                 {category.label}
               </span>
             </label>

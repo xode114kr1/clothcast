@@ -21,10 +21,10 @@ export function ImagePicker({
 
   return (
     <label
-      className="group relative flex aspect-[3/4] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-[var(--radius-xl)] border-2 border-dashed transition-all"
+      className="group relative flex aspect-[3/4] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-[var(--radius-xl)] border border-dashed transition-all"
       style={{
         backgroundColor: "var(--surface-container-low)",
-        borderColor: "rgba(191, 199, 213, 1)",
+        borderColor: "var(--ghost-border)",
       }}
     >
       <input
