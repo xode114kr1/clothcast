@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
 
+import { apiError, apiSuccess } from "@/lib/api/response";
 import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
 import {
   validateClothesIdParam,
@@ -15,74 +15,6 @@ type RouteContext = {
     id: string;
   }>;
 };
-
-type ErrorCode = "INVALID_REQUEST" | "UNAUTHORIZED" | "CLOTH_NOT_FOUND" | "SERVER_ERROR";
-
-type ClothesResponseData = {
-  id: number;
-  userId: number;
-  name: string;
-  category: string;
-  color: string;
-  fit: string;
-  formality: number;
-  material: string | null;
-  pattern: string | null;
-  imageUrl: string;
-  createdAt: Date;
-};
-
-// 옷 상세 조회 성공 응답을 API 공통 형식으로 만든다.
-function detailSuccessResponse(data: ClothesResponseData, init?: ResponseInit) {
-  return NextResponse.json(
-    {
-      status: "success",
-      message: "의류 상세 정보를 조회했습니다.",
-      data,
-    },
-    init,
-  );
-}
-
-// 옷 수정 성공 응답을 API 공통 형식으로 만든다.
-function updateSuccessResponse(data: ClothesResponseData, init?: ResponseInit) {
-  return NextResponse.json(
-    {
-      status: "success",
-      message: "의류 정보가 수정되었습니다.",
-      data,
-    },
-    init,
-  );
-}
-
-// 옷 삭제 성공 응답을 API 공통 형식으로 만든다.
-function deleteSuccessResponse(data: { id: number }, init?: ResponseInit) {
-  return NextResponse.json(
-    {
-      status: "success",
-      message: "의류가 삭제되었습니다.",
-      data,
-    },
-    init,
-  );
-}
-
-// 옷 상세/삭제 실패 응답을 API 공통 형식으로 만든다.
-function errorResponse(
-  message: string,
-  code: ErrorCode,
-  init?: ResponseInit,
-) {
-  return NextResponse.json(
-    {
-      status: "error",
-      message,
-      data: { code },
-    },
-    init,
-  );
-}
 
 // HttpOnly 세션 쿠키를 검증해 현재 요청의 사용자 ID를 가져온다.
 async function getSessionUserId() {
@@ -115,7 +47,7 @@ export async function GET(_request: Request, context: RouteContext) {
   const userId = await getSessionUserId();
 
   if (!userId) {
-    return errorResponse("로그인이 필요합니다.", "UNAUTHORIZED", {
+    return apiError("로그인이 필요합니다.", "UNAUTHORIZED", {
       status: 401,
     });
   }
@@ -123,7 +55,7 @@ export async function GET(_request: Request, context: RouteContext) {
   const idValidation = await getClothesId(context);
 
   if (!idValidation.success) {
-    return errorResponse(idValidation.message, idValidation.code, { status: 400 });
+    return apiError(idValidation.message, idValidation.code, { status: 400 });
   }
 
   try {
@@ -148,14 +80,14 @@ export async function GET(_request: Request, context: RouteContext) {
     });
 
     if (!clothes) {
-      return errorResponse("의류 데이터를 찾을 수 없습니다.", "CLOTH_NOT_FOUND", {
+      return apiError("의류 데이터를 찾을 수 없습니다.", "CLOTH_NOT_FOUND", {
         status: 404,
       });
     }
 
-    return detailSuccessResponse(clothes, { status: 200 });
+    return apiSuccess("의류 상세 정보를 조회했습니다.", clothes, { status: 200 });
   } catch {
-    return errorResponse("의류 상세 조회 중 오류가 발생했습니다.", "SERVER_ERROR", {
+    return apiError("의류 상세 조회 중 오류가 발생했습니다.", "SERVER_ERROR", {
       status: 500,
     });
   }
@@ -166,7 +98,7 @@ export async function DELETE(_request: Request, context: RouteContext) {
   const userId = await getSessionUserId();
 
   if (!userId) {
-    return errorResponse("로그인이 필요합니다.", "UNAUTHORIZED", {
+    return apiError("로그인이 필요합니다.", "UNAUTHORIZED", {
       status: 401,
     });
   }
@@ -174,7 +106,7 @@ export async function DELETE(_request: Request, context: RouteContext) {
   const idValidation = await getClothesId(context);
 
   if (!idValidation.success) {
-    return errorResponse(idValidation.message, idValidation.code, { status: 400 });
+    return apiError(idValidation.message, idValidation.code, { status: 400 });
   }
 
   try {
@@ -186,14 +118,14 @@ export async function DELETE(_request: Request, context: RouteContext) {
     });
 
     if (result.count === 0) {
-      return errorResponse("의류 데이터를 찾을 수 없습니다.", "CLOTH_NOT_FOUND", {
+      return apiError("의류 데이터를 찾을 수 없습니다.", "CLOTH_NOT_FOUND", {
         status: 404,
       });
     }
 
-    return deleteSuccessResponse({ id: idValidation.data.id }, { status: 200 });
+    return apiSuccess("의류가 삭제되었습니다.", { id: idValidation.data.id }, { status: 200 });
   } catch {
-    return errorResponse("의류 삭제 중 오류가 발생했습니다.", "SERVER_ERROR", {
+    return apiError("의류 삭제 중 오류가 발생했습니다.", "SERVER_ERROR", {
       status: 500,
     });
   }
@@ -204,7 +136,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   const userId = await getSessionUserId();
 
   if (!userId) {
-    return errorResponse("로그인이 필요합니다.", "UNAUTHORIZED", {
+    return apiError("로그인이 필요합니다.", "UNAUTHORIZED", {
       status: 401,
     });
   }
@@ -212,7 +144,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   const idValidation = await getClothesId(context);
 
   if (!idValidation.success) {
-    return errorResponse(idValidation.message, idValidation.code, { status: 400 });
+    return apiError(idValidation.message, idValidation.code, { status: 400 });
   }
 
   let body: unknown;
@@ -220,7 +152,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   try {
     body = await request.json();
   } catch {
-    return errorResponse("요청 본문이 올바른 JSON 형식이 아닙니다.", "INVALID_REQUEST", {
+    return apiError("요청 본문이 올바른 JSON 형식이 아닙니다.", "INVALID_REQUEST", {
       status: 400,
     });
   }
@@ -228,7 +160,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   const validation = validateUpdateClothesInput(body);
 
   if (!validation.success) {
-    return errorResponse(validation.message, validation.code, { status: 400 });
+    return apiError(validation.message, validation.code, { status: 400 });
   }
 
   try {
@@ -241,7 +173,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     });
 
     if (result.count === 0) {
-      return errorResponse("의류 데이터를 찾을 수 없습니다.", "CLOTH_NOT_FOUND", {
+      return apiError("의류 데이터를 찾을 수 없습니다.", "CLOTH_NOT_FOUND", {
         status: 404,
       });
     }
@@ -267,14 +199,14 @@ export async function PATCH(request: Request, context: RouteContext) {
     });
 
     if (!clothes) {
-      return errorResponse("의류 데이터를 찾을 수 없습니다.", "CLOTH_NOT_FOUND", {
+      return apiError("의류 데이터를 찾을 수 없습니다.", "CLOTH_NOT_FOUND", {
         status: 404,
       });
     }
 
-    return updateSuccessResponse(clothes, { status: 200 });
+    return apiSuccess("의류 정보가 수정되었습니다.", clothes, { status: 200 });
   } catch {
-    return errorResponse("의류 수정 중 오류가 발생했습니다.", "SERVER_ERROR", {
+    return apiError("의류 수정 중 오류가 발생했습니다.", "SERVER_ERROR", {
       status: 500,
     });
   }

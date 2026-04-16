@@ -1,47 +1,13 @@
 import { Prisma } from "@/generated/prisma/client";
+import { apiError, apiSuccess } from "@/lib/api/response";
 import { hashPassword } from "@/lib/auth/password";
 import { validateSignupInput } from "@/lib/auth/signup-validation";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 
-type ErrorCode = "INVALID_REQUEST" | "EMAIL_ALREADY_EXISTS" | "SERVER_ERROR";
-
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function successResponse(
-  data: {
-    userId: number;
-    email: string;
-    nickname: string;
-  },
-  init?: ResponseInit,
-) {
-  return Response.json(
-    {
-      status: "success",
-      message: "회원가입이 완료되었습니다.",
-      data,
-    },
-    init,
-  );
-}
-
-function errorResponse(
-  message: string,
-  code: ErrorCode,
-  init?: ResponseInit,
-) {
-  return Response.json(
-    {
-      status: "error",
-      message,
-      data: { code },
-    },
-    init,
-  );
 }
 
 export async function POST(request: Request) {
@@ -50,7 +16,7 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return errorResponse("요청 본문이 올바른 JSON 형식이 아닙니다.", "INVALID_REQUEST", {
+    return apiError("요청 본문이 올바른 JSON 형식이 아닙니다.", "INVALID_REQUEST", {
       status: 400,
     });
   }
@@ -63,7 +29,7 @@ export async function POST(request: Request) {
   });
 
   if (!validation.success) {
-    return errorResponse(validation.message, validation.code, { status: 400 });
+    return apiError(validation.message, validation.code, { status: 400 });
   }
 
   const { email, nickname, password } = validation.data;
@@ -75,7 +41,7 @@ export async function POST(request: Request) {
     });
 
     if (existingUser) {
-      return errorResponse("이미 가입된 이메일입니다.", "EMAIL_ALREADY_EXISTS", {
+      return apiError("이미 가입된 이메일입니다.", "EMAIL_ALREADY_EXISTS", {
         status: 409,
       });
     }
@@ -94,7 +60,8 @@ export async function POST(request: Request) {
       },
     });
 
-    return successResponse(
+    return apiSuccess(
+      "회원가입이 완료되었습니다.",
       {
         userId: user.id,
         email: user.email,
@@ -107,12 +74,12 @@ export async function POST(request: Request) {
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2002"
     ) {
-      return errorResponse("이미 가입된 이메일입니다.", "EMAIL_ALREADY_EXISTS", {
+      return apiError("이미 가입된 이메일입니다.", "EMAIL_ALREADY_EXISTS", {
         status: 409,
       });
     }
 
-    return errorResponse("회원가입 처리 중 오류가 발생했습니다.", "SERVER_ERROR", {
+    return apiError("회원가입 처리 중 오류가 발생했습니다.", "SERVER_ERROR", {
       status: 500,
     });
   }

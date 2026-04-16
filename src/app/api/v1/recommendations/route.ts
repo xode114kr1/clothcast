@@ -1,11 +1,10 @@
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
 
+import { apiError, apiSuccess } from "@/lib/api/response";
 import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
 import { generateGeminiText } from "@/lib/ai/gemini";
 import { prisma } from "@/lib/prisma";
 import type {
-  RecommendationHistoryItem,
   RecommendationResponseData,
   RecommendedOutfitItem,
 } from "@/lib/recommendations/recommendation-types";
@@ -13,14 +12,6 @@ import { validateCreateRecommendationInput } from "@/lib/recommendations/recomme
 import type { CurrentWeatherData } from "@/lib/weather/weather-types";
 
 export const runtime = "nodejs";
-
-type ErrorCode =
-  | "INVALID_REQUEST"
-  | "UNAUTHORIZED"
-  | "USER_NOT_FOUND"
-  | "EMPTY_WARDROBE"
-  | "AI_RECOMMENDATION_FAILED"
-  | "SERVER_ERROR";
 
 type WardrobeItem = {
   id: number;
@@ -63,49 +54,6 @@ const RECOMMENDATION_SYSTEM_INSTRUCTION = [
   "추천 이유에는 날씨 조건과 사용자 상황을 모두 언급하세요.",
   "응답은 markdown 없이 JSON 객체 하나만 반환하세요.",
 ].join("\n");
-
-// 추천 생성 성공 응답을 API 공통 형식으로 만든다.
-function successResponse(data: RecommendationResponseData, init?: ResponseInit) {
-  return NextResponse.json(
-    {
-      status: "success",
-      message: "코디 추천이 생성되었습니다.",
-      data,
-    },
-    init,
-  );
-}
-
-// 추천 히스토리 조회 성공 응답을 API 공통 형식으로 만든다.
-function listSuccessResponse(
-  data: RecommendationHistoryItem[],
-  init?: ResponseInit,
-) {
-  return NextResponse.json(
-    {
-      status: "success",
-      message: "추천 기록을 조회했습니다.",
-      data,
-    },
-    init,
-  );
-}
-
-// 추천 API 실패 응답을 API 공통 형식으로 만든다.
-function errorResponse(
-  message: string,
-  code: ErrorCode,
-  init?: ResponseInit,
-) {
-  return NextResponse.json(
-    {
-      status: "error",
-      message,
-      data: { code },
-    },
-    init,
-  );
-}
 
 // HttpOnly 세션 쿠키를 검증해 현재 요청의 사용자 ID를 가져온다.
 async function getSessionUserId() {
@@ -294,7 +242,7 @@ export async function POST(request: Request) {
   const userId = await getSessionUserId();
 
   if (!userId) {
-    return errorResponse("로그인이 필요합니다.", "UNAUTHORIZED", {
+    return apiError("로그인이 필요합니다.", "UNAUTHORIZED", {
       status: 401,
     });
   }
@@ -304,7 +252,7 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return errorResponse("요청 본문이 올바른 JSON 형식이 아닙니다.", "INVALID_REQUEST", {
+    return apiError("요청 본문이 올바른 JSON 형식이 아닙니다.", "INVALID_REQUEST", {
       status: 400,
     });
   }
@@ -312,7 +260,7 @@ export async function POST(request: Request) {
   const validation = validateCreateRecommendationInput(body);
 
   if (!validation.success) {
-    return errorResponse(validation.message, validation.code, { status: 400 });
+    return apiError(validation.message, validation.code, { status: 400 });
   }
 
   try {
@@ -322,7 +270,7 @@ export async function POST(request: Request) {
     });
 
     if (!user) {
-      return errorResponse("사용자를 찾을 수 없습니다.", "USER_NOT_FOUND", {
+      return apiError("사용자를 찾을 수 없습니다.", "USER_NOT_FOUND", {
         status: 404,
       });
     }
@@ -344,7 +292,7 @@ export async function POST(request: Request) {
     });
 
     if (wardrobe.length === 0) {
-      return errorResponse("등록된 옷이 없어 추천을 생성할 수 없습니다.", "EMPTY_WARDROBE", {
+      return apiError("등록된 옷이 없어 추천을 생성할 수 없습니다.", "EMPTY_WARDROBE", {
         status: 400,
       });
     }
@@ -368,7 +316,7 @@ export async function POST(request: Request) {
     );
 
     if (recommendedItems.length === 0) {
-      return errorResponse("추천 가능한 옷 조합을 만들지 못했습니다.", "AI_RECOMMENDATION_FAILED", {
+      return apiError("추천 가능한 옷 조합을 만들지 못했습니다.", "AI_RECOMMENDATION_FAILED", {
         status: 500,
       });
     }
@@ -388,7 +336,8 @@ export async function POST(request: Request) {
       styleTone: recommendation.styleTone,
     });
 
-    return successResponse(
+    return apiSuccess(
+      "코디 추천이 생성되었습니다.",
       {
         recommendationId,
         prompt: validation.data.prompt,
@@ -400,7 +349,7 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch {
-    return errorResponse("AI 코디 추천 생성에 실패했습니다.", "AI_RECOMMENDATION_FAILED", {
+    return apiError("AI 코디 추천 생성에 실패했습니다.", "AI_RECOMMENDATION_FAILED", {
       status: 500,
     });
   }
@@ -411,7 +360,7 @@ export async function GET() {
   const userId = await getSessionUserId();
 
   if (!userId) {
-    return errorResponse("로그인이 필요합니다.", "UNAUTHORIZED", {
+    return apiError("로그인이 필요합니다.", "UNAUTHORIZED", {
       status: 401,
     });
   }
@@ -431,7 +380,8 @@ export async function GET() {
       LIMIT 10
     `;
 
-    return listSuccessResponse(
+    return apiSuccess(
+      "추천 기록을 조회했습니다.",
       recommendations.map((recommendation) => ({
         recommendationId: recommendation.id,
         prompt: recommendation.prompt,
@@ -445,7 +395,7 @@ export async function GET() {
       { status: 200 },
     );
   } catch {
-    return errorResponse("추천 기록 조회 중 오류가 발생했습니다.", "SERVER_ERROR", {
+    return apiError("추천 기록 조회 중 오류가 발생했습니다.", "SERVER_ERROR", {
       status: 500,
     });
   }
