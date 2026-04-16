@@ -1,17 +1,7 @@
 import Image from "next/image";
 
+import { getClothingCategoryLabel } from "@/lib/clothes/clothes-form-types";
 import type { RecommendationResponseData } from "@/lib/recommendations/recommendation-types";
-
-function getCategoryLabel(category: string) {
-  const labels: Record<string, string> = {
-    TOP: "상의",
-    BOTTOM: "하의",
-    OUTER: "아우터",
-    SHOES: "신발",
-  };
-
-  return labels[category] ?? category;
-}
 
 export function RecommendedItemCards({
   recommendation,
@@ -41,7 +31,7 @@ export function RecommendedItemCards({
           </div>
           <div className="px-2 pb-2">
             <span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--primary)]">
-              {getCategoryLabel(item.category)}
+              {getClothingCategoryLabel(item.category)}
             </span>
             <h3
               className="text-xl font-bold text-[#191c1d]"

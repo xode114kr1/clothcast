@@ -1,6 +1,11 @@
-export type ClothingCategory = "TOP" | "BOTTOM" | "OUTER" | "SHOES";
+import type {
+  ClothingCategory as PrismaClothingCategory,
+  ClothingFit as PrismaClothingFit,
+} from "@/generated/prisma/enums";
 
-export type ClothingFit = "oversized" | "regular" | "slim";
+export type ClothingCategory = PrismaClothingCategory;
+
+export type ClothingFit = PrismaClothingFit;
 
 export type ClothesItem = {
   id: number;
@@ -28,21 +33,42 @@ export type ClothesPayload = ClothesFormValues & {
   imageUrl: string;
 };
 
+export const clothingCategoryLabels: Record<ClothingCategory, string> = {
+  TOP: "상의",
+  BOTTOM: "하의",
+  OUTER: "아우터",
+  SHOES: "신발",
+};
+
+export const clothingFitLabels: Record<ClothingFit, string> = {
+  oversized: "오버사이즈",
+  regular: "레귤러",
+  slim: "슬림",
+};
+
 export const clothingCategoryOptions = [
-  { label: "상의", value: "TOP" },
-  { label: "하의", value: "BOTTOM" },
-  { label: "아우터", value: "OUTER" },
-  { label: "신발", value: "SHOES" },
+  { label: clothingCategoryLabels.TOP, value: "TOP" },
+  { label: clothingCategoryLabels.BOTTOM, value: "BOTTOM" },
+  { label: clothingCategoryLabels.OUTER, value: "OUTER" },
+  { label: clothingCategoryLabels.SHOES, value: "SHOES" },
 ] as const satisfies ReadonlyArray<{
   label: string;
   value: ClothingCategory;
 }>;
 
 export const clothingFitOptions = [
-  { label: "오버사이즈", value: "oversized" },
-  { label: "레귤러", value: "regular" },
-  { label: "슬림", value: "slim" },
+  { label: clothingFitLabels.oversized, value: "oversized" },
+  { label: clothingFitLabels.regular, value: "regular" },
+  { label: clothingFitLabels.slim, value: "slim" },
 ] as const satisfies ReadonlyArray<{
   label: string;
   value: ClothingFit;
 }>;
+
+export function getClothingCategoryLabel(category: string) {
+  return clothingCategoryLabels[category as ClothingCategory] ?? category;
+}
+
+export function getClothingFitLabel(fit: string) {
+  return clothingFitLabels[fit as ClothingFit] ?? fit;
+}

@@ -6,32 +6,11 @@ import Link from "next/link";
 import { Pencil, Trash2 } from "lucide-react";
 
 import { fetchApiData } from "@/lib/api/client";
-
-type ClothesItem = {
-  id: number;
-  name: string;
-  category: "TOP" | "BOTTOM" | "OUTER" | "SHOES";
-  color: string;
-  fit: "oversized" | "regular" | "slim";
-  formality: number;
-  material: string | null;
-  pattern: string | null;
-  imageUrl: string;
-  createdAt?: string;
-};
-
-const categoryLabels: Record<ClothesItem["category"], string> = {
-  TOP: "상의",
-  BOTTOM: "하의",
-  OUTER: "아우터",
-  SHOES: "신발",
-};
-
-const fitLabels: Record<ClothesItem["fit"], string> = {
-  oversized: "오버사이즈",
-  regular: "레귤러",
-  slim: "슬림",
-};
+import {
+  getClothingCategoryLabel,
+  getClothingFitLabel,
+  type ClothesItem,
+} from "@/lib/clothes/clothes-form-types";
 
 // GET /api/v1/clothes 응답의 data가 의류 배열인지 확인한다.
 function isClothesList(value: unknown): value is ClothesItem[] {
@@ -204,7 +183,7 @@ export function WardrobeList() {
 
             <div className="absolute left-4 top-4 flex flex-wrap gap-2">
               <span className="rounded-full bg-[rgb(255_255_255_/_0.9)] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--primary)] shadow-sm backdrop-blur">
-                {categoryLabels[item.category]}
+                {getClothingCategoryLabel(item.category)}
               </span>
             </div>
 
@@ -242,7 +221,7 @@ export function WardrobeList() {
                 className="rounded-full px-3 py-1 text-xs font-medium text-[#404753]"
                 style={{ backgroundColor: "var(--surface-container-low)" }}
               >
-                {fitLabels[item.fit]}
+                {getClothingFitLabel(item.fit)}
               </span>
               <span
                 className="rounded-full px-3 py-1 text-xs font-medium text-[#404753]"
