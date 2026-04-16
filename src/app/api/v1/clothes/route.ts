@@ -1,8 +1,6 @@
-import { cookies } from "next/headers";
-
 import type { Prisma } from "@/generated/prisma/client";
 import { apiError, apiSuccess } from "@/lib/api/response";
-import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
+import { getCurrentSessionUserId } from "@/lib/auth/current-user";
 import {
   validateCreateClothesInput,
   validateListClothesQuery,
@@ -11,20 +9,6 @@ import type { ListClothesFilters } from "@/lib/clothes/clothes-validation";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
-
-// HttpOnly 세션 쿠키를 검증해 현재 요청의 사용자 ID를 가져온다.
-async function getSessionUserId() {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-
-  if (!sessionToken) {
-    return null;
-  }
-
-  const session = await verifySessionToken(sessionToken);
-
-  return session?.userId ?? null;
-}
 
 // 목록 조회 query filter를 Prisma where 조건으로 변환한다.
 function buildClothesWhereInput(
@@ -41,7 +25,7 @@ function buildClothesWhereInput(
 
 // 인증된 사용자의 옷 등록 요청을 검증한 뒤 Clothes 레코드를 생성한다.
 export async function POST(request: Request) {
-  const userId = await getSessionUserId();
+  const userId = await getCurrentSessionUserId();
 
   if (!userId) {
     return apiError("로그인이 필요합니다.", "UNAUTHORIZED", {
@@ -107,7 +91,7 @@ export async function POST(request: Request) {
 
 // 인증된 사용자의 옷 목록을 최신 등록순으로 조회한다.
 export async function GET(request: Request) {
-  const userId = await getSessionUserId();
+  const userId = await getCurrentSessionUserId();
 
   if (!userId) {
     return apiError("로그인이 필요합니다.", "UNAUTHORIZED", {

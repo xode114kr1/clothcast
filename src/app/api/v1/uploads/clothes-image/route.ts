@@ -1,9 +1,7 @@
 import { randomUUID } from "crypto";
 
-import { cookies } from "next/headers";
-
 import { apiError, apiSuccess } from "@/lib/api/response";
-import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
+import { getCurrentSessionUser } from "@/lib/auth/current-user";
 import { uploadObjectToS3 } from "@/lib/storage/s3";
 import { validateClothesImageFile } from "@/lib/uploads/clothes-image-validation";
 
@@ -11,16 +9,7 @@ export const runtime = "nodejs";
 
 // 인증된 사용자의 의류 이미지를 multipart/form-data로 받아 S3에 업로드한다.
 export async function POST(request: Request) {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-
-  if (!sessionToken) {
-    return apiError("로그인이 필요합니다.", "UNAUTHORIZED", {
-      status: 401,
-    });
-  }
-
-  const session = await verifySessionToken(sessionToken);
+  const session = await getCurrentSessionUser();
 
   if (!session) {
     return apiError("로그인이 필요합니다.", "UNAUTHORIZED", {

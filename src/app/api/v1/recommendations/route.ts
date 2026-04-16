@@ -1,7 +1,5 @@
-import { cookies } from "next/headers";
-
 import { apiError, apiSuccess } from "@/lib/api/response";
-import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
+import { getCurrentSessionUserId } from "@/lib/auth/current-user";
 import { generateGeminiText } from "@/lib/ai/gemini";
 import { prisma } from "@/lib/prisma";
 import type {
@@ -54,20 +52,6 @@ const RECOMMENDATION_SYSTEM_INSTRUCTION = [
   "추천 이유에는 날씨 조건과 사용자 상황을 모두 언급하세요.",
   "응답은 markdown 없이 JSON 객체 하나만 반환하세요.",
 ].join("\n");
-
-// HttpOnly 세션 쿠키를 검증해 현재 요청의 사용자 ID를 가져온다.
-async function getSessionUserId() {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-
-  if (!sessionToken) {
-    return null;
-  }
-
-  const session = await verifySessionToken(sessionToken);
-
-  return session?.userId ?? null;
-}
 
 // Gemini에 전달할 추천 요청 프롬프트를 JSON 기반으로 구성한다.
 function buildRecommendationPrompt({
@@ -239,7 +223,7 @@ async function saveRecommendationHistory({
 
 // 인증된 사용자의 옷장과 날씨, 프롬프트를 조합해 Gemini 코디 추천을 생성한다.
 export async function POST(request: Request) {
-  const userId = await getSessionUserId();
+  const userId = await getCurrentSessionUserId();
 
   if (!userId) {
     return apiError("로그인이 필요합니다.", "UNAUTHORIZED", {
@@ -357,7 +341,7 @@ export async function POST(request: Request) {
 
 // 인증된 사용자의 추천 히스토리를 최신순으로 조회한다.
 export async function GET() {
-  const userId = await getSessionUserId();
+  const userId = await getCurrentSessionUserId();
 
   if (!userId) {
     return apiError("로그인이 필요합니다.", "UNAUTHORIZED", {

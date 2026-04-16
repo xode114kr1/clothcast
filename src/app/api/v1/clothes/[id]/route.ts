@@ -1,7 +1,5 @@
-import { cookies } from "next/headers";
-
 import { apiError, apiSuccess } from "@/lib/api/response";
-import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
+import { getCurrentSessionUserId } from "@/lib/auth/current-user";
 import {
   validateClothesIdParam,
   validateUpdateClothesInput,
@@ -15,20 +13,6 @@ type RouteContext = {
     id: string;
   }>;
 };
-
-// HttpOnly 세션 쿠키를 검증해 현재 요청의 사용자 ID를 가져온다.
-async function getSessionUserId() {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-
-  if (!sessionToken) {
-    return null;
-  }
-
-  const session = await verifySessionToken(sessionToken);
-
-  return session?.userId ?? null;
-}
 
 // 동적 route param을 검증해 숫자 의류 ID로 변환한다.
 async function getClothesId(context: RouteContext) {
@@ -44,7 +28,7 @@ async function getClothesId(context: RouteContext) {
 
 // 인증된 사용자가 소유한 특정 의류의 상세 정보를 조회한다.
 export async function GET(_request: Request, context: RouteContext) {
-  const userId = await getSessionUserId();
+  const userId = await getCurrentSessionUserId();
 
   if (!userId) {
     return apiError("로그인이 필요합니다.", "UNAUTHORIZED", {
@@ -95,7 +79,7 @@ export async function GET(_request: Request, context: RouteContext) {
 
 // 인증된 사용자가 소유한 특정 의류 데이터를 삭제한다.
 export async function DELETE(_request: Request, context: RouteContext) {
-  const userId = await getSessionUserId();
+  const userId = await getCurrentSessionUserId();
 
   if (!userId) {
     return apiError("로그인이 필요합니다.", "UNAUTHORIZED", {
@@ -133,7 +117,7 @@ export async function DELETE(_request: Request, context: RouteContext) {
 
 // 인증된 사용자가 소유한 특정 의류 데이터를 수정한다.
 export async function PATCH(request: Request, context: RouteContext) {
-  const userId = await getSessionUserId();
+  const userId = await getCurrentSessionUserId();
 
   if (!userId) {
     return apiError("로그인이 필요합니다.", "UNAUTHORIZED", {

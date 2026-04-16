@@ -1,9 +1,8 @@
-import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowRight, CalendarDays, Shirt, Sparkles, User } from "lucide-react";
 
-import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
+import { getCurrentSessionUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import type { RecommendedOutfitItem } from "@/lib/recommendations/recommendation-types";
 import { ProfileActions } from "@/components/profile/profile-actions";
@@ -56,14 +55,7 @@ function isRecommendedOutfitItems(value: unknown): value is RecommendedOutfitIte
 }
 
 async function getProfileData(): Promise<ProfileData | null> {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-
-  if (!sessionToken) {
-    return null;
-  }
-
-  const session = await verifySessionToken(sessionToken);
+  const session = await getCurrentSessionUser();
 
   if (!session) {
     return null;

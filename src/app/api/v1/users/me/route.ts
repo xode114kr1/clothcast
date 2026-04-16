@@ -1,22 +1,11 @@
-import { cookies } from "next/headers";
-
 import { apiError, apiSuccess } from "@/lib/api/response";
-import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
+import { getCurrentSessionUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 
 export async function GET() {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-
-  if (!sessionToken) {
-    return apiError("로그인이 필요합니다.", "UNAUTHORIZED", {
-      status: 401,
-    });
-  }
-
-  const session = await verifySessionToken(sessionToken);
+  const session = await getCurrentSessionUser();
 
   if (!session) {
     return apiError("로그인이 필요합니다.", "UNAUTHORIZED", {
