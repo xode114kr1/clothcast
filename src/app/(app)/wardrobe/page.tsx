@@ -1,9 +1,20 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
 
 import { WardrobeList } from "@/components/wardrobe/wardrobe-list";
+import { getCurrentSessionUserId } from "@/lib/auth/current-user";
+import { listWardrobeItems } from "@/lib/clothes/clothes-read-model";
 
-export default function WardrobePage() {
+export default async function WardrobePage() {
+  const userId = await getCurrentSessionUserId();
+
+  if (!userId) {
+    redirect("/login");
+  }
+
+  const wardrobeItems = await listWardrobeItems(userId);
+
   return (
     <>
       <main className="mx-auto max-w-7xl px-8 py-12">
@@ -36,7 +47,7 @@ export default function WardrobePage() {
           </Link>
         </header>
 
-        <WardrobeList />
+        <WardrobeList initialItems={wardrobeItems} />
       </main>
     </>
   );

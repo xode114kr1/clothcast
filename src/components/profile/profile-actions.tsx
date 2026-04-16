@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { LogOut, Shirt, Sparkles } from "lucide-react";
 import { useState } from "react";
 
+import { fetchApiData } from "@/lib/api/client";
+
 export function ProfileActions() {
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -17,9 +19,15 @@ export function ProfileActions() {
     setIsLoggingOut(true);
 
     try {
-      await fetch("/api/v1/auth/logout", {
-        method: "POST",
-      });
+      await fetchApiData(
+        "/api/v1/auth/logout",
+        {
+          method: "POST",
+        },
+        {
+          fallbackMessage: "로그아웃 처리 중 오류가 발생했습니다.",
+        },
+      );
     } finally {
       setIsLoggingOut(false);
       router.push("/login");
