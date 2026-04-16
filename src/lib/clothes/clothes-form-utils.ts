@@ -4,7 +4,7 @@ import type {
   ClothesPayload,
   ClothingCategory,
   ClothingFit,
-} from "./wardrobe-item-form-types";
+} from "@/lib/clothes/clothes-form-types";
 
 export function isClothesItem(value: unknown): value is ClothesItem {
   if (

@@ -6,12 +6,12 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { fetchApiData, fetchApiJson } from "@/lib/api/client";
+import { buildClothesPayload, isClothesItem } from "@/lib/clothes/clothes-form-utils";
+import type { ClothesItem } from "@/lib/clothes/clothes-form-types";
+import { useClothesImageUpload } from "@/lib/clothes/use-clothes-image-upload";
 
-import { buildClothesPayload, isClothesItem } from "./clothes-form-utils";
 import { ImagePicker } from "./image-picker";
-import { useClothesImageUpload } from "./use-clothes-image-upload";
 import { WardrobeItemFormFields } from "./wardrobe-item-form-fields";
-import type { ClothesItem } from "./wardrobe-item-form-types";
 
 type EditWardrobeItemFormProps = {
   clothesId: string;

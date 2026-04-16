@@ -4,7 +4,7 @@ import {
   clothingCategoryOptions,
   clothingFitOptions,
   type ClothesItem,
-} from "./wardrobe-item-form-types";
+} from "@/lib/clothes/clothes-form-types";
 
 type WardrobeItemFormFieldsProps = {
   disabled: boolean;

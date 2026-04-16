@@ -6,10 +6,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { fetchApiJson } from "@/lib/api/client";
+import { buildClothesPayload } from "@/lib/clothes/clothes-form-utils";
+import { useClothesImageUpload } from "@/lib/clothes/use-clothes-image-upload";
 
-import { buildClothesPayload } from "./clothes-form-utils";
 import { ImagePicker } from "./image-picker";
-import { useClothesImageUpload } from "./use-clothes-image-upload";
 import { WardrobeItemFormFields } from "./wardrobe-item-form-fields";
 
 export function NewWardrobeItemForm() {
