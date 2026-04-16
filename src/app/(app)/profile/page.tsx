@@ -4,17 +4,13 @@ import { ArrowRight, CalendarDays, Shirt, Sparkles, User } from "lucide-react";
 
 import { getCurrentSessionUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
+import {
+  countRecommendationHistory,
+  listRecommendationHistoryRecords,
+} from "@/lib/recommendations/recommendation-history";
+import type { RecommendationHistoryRecord } from "@/lib/recommendations/recommendation-history";
 import type { RecommendedOutfitItem } from "@/lib/recommendations/recommendation-types";
 import { ProfileActions } from "@/components/profile/profile-actions";
-
-type RecentRecommendation = {
-  recommendationId: number;
-  prompt: string;
-  reason: string;
-  styleTone: string;
-  recommendedItems: RecommendedOutfitItem[];
-  createdAt: Date;
-};
 
 type ProfileData = {
   email: string;
@@ -22,37 +18,8 @@ type ProfileData = {
   createdAt: Date;
   clothesCount: number;
   recommendationsCount: number;
-  recentRecommendations: RecentRecommendation[];
+  recentRecommendations: RecommendationHistoryRecord[];
 };
-
-type RecommendationHistoryRow = {
-  id: number;
-  prompt: string;
-  reason: string;
-  styleTone: string;
-  recommendedItems: unknown;
-  createdAt: Date;
-};
-
-function isRecommendedOutfitItems(value: unknown): value is RecommendedOutfitItem[] {
-  return (
-    Array.isArray(value) &&
-    value.every((item) => {
-      if (typeof item !== "object" || item === null || Array.isArray(item)) {
-        return false;
-      }
-
-      const payload = item as Record<string, unknown>;
-
-      return (
-        typeof payload.id === "number" &&
-        typeof payload.name === "string" &&
-        typeof payload.category === "string" &&
-        typeof payload.imageUrl === "string"
-      );
-    })
-  );
-}
 
 async function getProfileData(): Promise<ProfileData | null> {
   const session = await getCurrentSessionUser();
@@ -81,42 +48,19 @@ async function getProfileData(): Promise<ProfileData | null> {
   }
 
   const [recommendationsCount, recentRecommendations] = await Promise.all([
-    prisma.$queryRaw<[{ count: bigint }]>`
-      SELECT COUNT(*)::bigint AS count
-      FROM "Recommendation"
-      WHERE "userId" = ${user.id}
-    `,
-    prisma.$queryRaw<RecommendationHistoryRow[]>`
-      SELECT
-        "id",
-        "prompt",
-        "reason",
-        "styleTone",
-        "recommendedItems",
-        "createdAt"
-      FROM "Recommendation"
-      WHERE "userId" = ${user.id}
-      ORDER BY "createdAt" DESC
-      LIMIT 3
-    `,
-  ]).catch(() => [null, [] as RecommendationHistoryRow[]] as const);
+    countRecommendationHistory(user.id),
+    listRecommendationHistoryRecords(user.id, 3),
+  ]).catch(
+    (): [number, RecommendationHistoryRecord[]] => [0, []],
+  );
 
   return {
     email: user.email,
     nickname: user.nickname,
     createdAt: user.createdAt,
     clothesCount: user._count.clothes,
-    recommendationsCount: Number(recommendationsCount?.[0]?.count ?? 0),
-    recentRecommendations: recentRecommendations.map((recommendation) => ({
-      recommendationId: recommendation.id,
-      prompt: recommendation.prompt,
-      reason: recommendation.reason,
-      styleTone: recommendation.styleTone,
-      recommendedItems: isRecommendedOutfitItems(recommendation.recommendedItems)
-        ? recommendation.recommendedItems
-        : [],
-      createdAt: recommendation.createdAt,
-    })),
+    recommendationsCount,
+    recentRecommendations,
   };
 }
 

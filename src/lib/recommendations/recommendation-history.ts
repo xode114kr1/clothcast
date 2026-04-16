@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import type {
   RecommendationHistoryItem,
@@ -7,16 +8,12 @@ import type {
   RecommendedOutfitItem,
 } from "@/lib/recommendations/recommendation-types";
 
-type SavedRecommendationRow = {
-  id: number;
-};
-
-type RecommendationHistoryRow = {
-  id: number;
+export type RecommendationHistoryRecord = {
+  recommendationId: number;
   prompt: string;
   reason: string;
   styleTone: string;
-  recommendedItems: unknown;
+  recommendedItems: RecommendedOutfitItem[];
   createdAt: Date;
 };
 
@@ -57,48 +54,49 @@ export async function saveRecommendationHistory({
   styleTone: string;
 }) {
   try {
-    const [savedRecommendation] = await prisma.$queryRaw<SavedRecommendationRow[]>`
-      INSERT INTO "Recommendation" (
-        "userId",
-        "prompt",
-        "weatherSummary",
-        "recommendedItems",
-        "reason",
-        "styleTone"
-      )
-      VALUES (
-        ${userId},
-        ${prompt},
-        ${JSON.stringify(weatherSummary)}::jsonb,
-        ${JSON.stringify(recommendedItems)}::jsonb,
-        ${reason},
-        ${styleTone}
-      )
-      RETURNING "id"
-    `;
+    const savedRecommendation = await prisma.recommendation.create({
+      data: {
+        userId,
+        prompt,
+        weatherSummary: weatherSummary satisfies Prisma.InputJsonValue,
+        recommendedItems: recommendedItems satisfies Prisma.InputJsonValue,
+        reason,
+        styleTone,
+      },
+      select: {
+        id: true,
+      },
+    });
 
-    return savedRecommendation?.id ?? null;
+    return savedRecommendation.id;
   } catch {
     return null;
   }
 }
 
-export async function listRecommendationHistory(
+export async function countRecommendationHistory(userId: number) {
+  return prisma.recommendation.count({
+    where: { userId },
+  });
+}
+
+export async function listRecommendationHistoryRecords(
   userId: number,
-): Promise<RecommendationHistoryItem[]> {
-  const recommendations = await prisma.$queryRaw<RecommendationHistoryRow[]>`
-    SELECT
-      "id",
-      "prompt",
-      "reason",
-      "styleTone",
-      "recommendedItems",
-      "createdAt"
-    FROM "Recommendation"
-    WHERE "userId" = ${userId}
-    ORDER BY "createdAt" DESC
-    LIMIT 10
-  `;
+  take: number,
+): Promise<RecommendationHistoryRecord[]> {
+  const recommendations = await prisma.recommendation.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    take,
+    select: {
+      id: true,
+      prompt: true,
+      reason: true,
+      styleTone: true,
+      recommendedItems: true,
+      createdAt: true,
+    },
+  });
 
   return recommendations.map((recommendation) => ({
     recommendationId: recommendation.id,
@@ -108,6 +106,17 @@ export async function listRecommendationHistory(
     recommendedItems: isRecommendedOutfitItems(recommendation.recommendedItems)
       ? recommendation.recommendedItems
       : [],
+    createdAt: recommendation.createdAt,
+  }));
+}
+
+export async function listRecommendationHistory(
+  userId: number,
+): Promise<RecommendationHistoryItem[]> {
+  const recommendations = await listRecommendationHistoryRecords(userId, 10);
+
+  return recommendations.map((recommendation) => ({
+    ...recommendation,
     createdAt: recommendation.createdAt.toISOString(),
   }));
 }
