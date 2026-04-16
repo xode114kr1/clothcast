@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Pencil, Trash2 } from "lucide-react";
@@ -12,61 +12,14 @@ import {
   type ClothesItem,
 } from "@/lib/clothes/clothes-form-types";
 
-// GET /api/v1/clothes 응답의 data가 의류 배열인지 확인한다.
-function isClothesList(value: unknown): value is ClothesItem[] {
-  return Array.isArray(value);
-}
+type WardrobeListProps = {
+  initialItems: ClothesItem[];
+};
 
-export function WardrobeList() {
-  const [items, setItems] = useState<ClothesItem[]>([]);
+export function WardrobeList({ initialItems }: WardrobeListProps) {
+  const [items, setItems] = useState<ClothesItem[]>(initialItems);
   const [errorMessage, setErrorMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<number | null>(null);
-
-  // 옷장 진입 시 로그인 사용자의 의류 목록을 불러온다.
-  useEffect(() => {
-    let ignore = false;
-
-    async function loadClothes() {
-      setIsLoading(true);
-      setErrorMessage("");
-
-      try {
-        const clothes = await fetchApiData<ClothesItem[]>(
-          "/api/v1/clothes",
-          {
-            method: "GET",
-          },
-          {
-            fallbackMessage: "옷장 데이터를 처리하는 중 오류가 발생했습니다.",
-            validateData: isClothesList,
-          },
-        );
-
-        if (!ignore) {
-          setItems(clothes);
-        }
-      } catch (error) {
-        if (!ignore) {
-          setErrorMessage(
-            error instanceof Error
-              ? error.message
-              : "네트워크 오류가 발생했습니다. 다시 시도해주세요.",
-          );
-        }
-      } finally {
-        if (!ignore) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    void loadClothes();
-
-    return () => {
-      ignore = true;
-    };
-  }, []);
 
   // 삭제 버튼 클릭 시 확인 후 API를 호출하고 성공한 항목을 화면에서 제거한다.
   async function handleDelete(item: ClothesItem) {
@@ -108,18 +61,6 @@ export function WardrobeList() {
     }
   }
 
-  if (isLoading) {
-    return (
-      <section
-        aria-busy="true"
-        className="rounded-[var(--radius-xl)] px-8 py-16 text-center"
-        style={{ backgroundColor: "var(--surface-container-low)" }}
-      >
-        <p className="font-semibold text-[#404753]">옷장을 불러오는 중입니다.</p>
-      </section>
-    );
-  }
-
   if (errorMessage) {
     return (
       <section
@@ -127,13 +68,6 @@ export function WardrobeList() {
         style={{ backgroundColor: "rgb(255 218 214 / 0.32)" }}
       >
         <p className="font-semibold text-[#8c1d18]">{errorMessage}</p>
-        <Link
-          className="mt-6 inline-flex rounded-full px-8 py-3 text-sm font-bold text-white"
-          href="/login"
-          style={{ background: "var(--gradient-hero)" }}
-        >
-          로그인하기
-        </Link>
       </section>
     );
   }
