@@ -743,7 +743,8 @@ Response:
 구현 메모:
 
 - Gemini API 키는 클라이언트에 노출하지 않고 서버 Route Handler에서만 사용한다.
-- MVP에서는 추천 히스토리를 저장하지 않으므로 `recommendationId`는 `null`일 수 있다.
+- 추천 히스토리는 Optional 기능이며, 생성 API와 분리된 히스토리 모듈에서 저장/조회한다.
+- 히스토리 저장 실패는 추천 생성 실패로 처리하지 않으며, 이 경우 `recommendationId`는 `null`일 수 있다.
 - AI 응답 실패, 일시적인 모델 과부하, 잘못된 AI 응답 형식은 `AI_RECOMMENDATION_FAILED`로 반환한다.
 
 ### 8.2 추천 히스토리 조회(Optional)
@@ -751,7 +752,7 @@ Response:
 Endpoint:
 
 ```text
-GET /api/v1/recommendations
+GET /api/v1/recommendations/history
 ```
 
 설명:
@@ -921,7 +922,7 @@ Weather:
 Recommendation:
 
 - `POST /api/v1/recommendations`
-- `GET /api/v1/recommendations` Optional
+- `GET /api/v1/recommendations/history` Optional
 - `GET /api/v1/recommendations/{recommendationId}` Optional
 
 ## 13. 구현 우선순위 추천
