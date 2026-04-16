@@ -8,13 +8,8 @@ import {
   useState,
 } from "react";
 
+import { fetchApiData } from "@/lib/api/client";
 import type { CurrentWeatherData } from "@/lib/weather/weather-types";
-
-type WeatherApiResponse = {
-  status: "success" | "error";
-  message: string;
-  data?: CurrentWeatherData | { code?: string };
-};
 
 export type CurrentWeatherState =
   | {
@@ -57,19 +52,6 @@ function isCurrentWeatherData(value: unknown): value is CurrentWeatherData {
   );
 }
 
-function getResponseMessage(data: unknown) {
-  if (
-    typeof data === "object" &&
-    data !== null &&
-    "message" in data &&
-    typeof data.message === "string"
-  ) {
-    return data.message;
-  }
-
-  return "날씨를 불러오지 못했습니다.";
-}
-
 function getCurrentPosition() {
   return new Promise<GeolocationPosition>((resolve, reject) => {
     if (!navigator.geolocation) {
@@ -96,16 +78,17 @@ async function fetchWeather({
     lat: String(lat),
     lon: String(lon),
   });
-  const response = await fetch(`/api/v1/weather/current?${params.toString()}`, {
-    method: "GET",
-  });
-  const data = (await response.json().catch(() => null)) as WeatherApiResponse | null;
 
-  if (!response.ok || data?.status !== "success" || !isCurrentWeatherData(data.data)) {
-    throw new Error(getResponseMessage(data));
-  }
-
-  return data.data;
+  return fetchApiData<CurrentWeatherData>(
+    `/api/v1/weather/current?${params.toString()}`,
+    {
+      method: "GET",
+    },
+    {
+      fallbackMessage: "날씨를 불러오지 못했습니다.",
+      validateData: isCurrentWeatherData,
+    },
+  );
 }
 
 export function CurrentWeatherProvider({

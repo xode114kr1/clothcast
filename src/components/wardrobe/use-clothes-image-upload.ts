@@ -3,11 +3,21 @@
 import type { ChangeEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 
-import {
-  type ApiResponse,
-  getResponseMessage,
-  getUploadedImageUrl,
-} from "./clothes-form-utils";
+import { fetchApiData } from "@/lib/api/client";
+
+type UploadResponseData = {
+  imageUrl: string;
+};
+
+function isUploadResponseData(value: unknown): value is UploadResponseData {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value) &&
+    "imageUrl" in value &&
+    typeof value.imageUrl === "string"
+  );
+}
 
 export function useClothesImageUpload() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -45,25 +55,20 @@ export function useClothesImageUpload() {
     const formData = new FormData();
     formData.append("file", selectedFile);
 
-    const response = await fetch("/api/v1/uploads/clothes-image", {
-      method: "POST",
-      body: formData,
-    });
-    const data = (await response.json().catch(() => null)) as ApiResponse | null;
+    const data = await fetchApiData<UploadResponseData>(
+      "/api/v1/uploads/clothes-image",
+      {
+        method: "POST",
+        body: formData,
+      },
+      {
+        fallbackMessage: "이미지 업로드 중 오류가 발생했습니다.",
+        invalidDataMessage: "이미지 업로드 응답이 올바르지 않습니다.",
+        validateData: isUploadResponseData,
+      },
+    );
 
-    if (!response.ok || data?.status !== "success") {
-      throw new Error(
-        getResponseMessage(data, "이미지 업로드 중 오류가 발생했습니다."),
-      );
-    }
-
-    const imageUrl = getUploadedImageUrl(data);
-
-    if (!imageUrl) {
-      throw new Error("이미지 업로드 응답이 올바르지 않습니다.");
-    }
-
-    return imageUrl;
+    return data.imageUrl;
   }
 
   return {

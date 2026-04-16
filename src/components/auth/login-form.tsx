@@ -6,24 +6,7 @@ import type { FormEvent } from "react";
 import { useState } from "react";
 import { AlertTriangle, ArrowRight, Lock, Mail } from "lucide-react";
 
-type LoginApiResponse = {
-  status: "success" | "error";
-  message: string;
-  data?: unknown;
-};
-
-function getResponseMessage(data: unknown) {
-  if (
-    typeof data === "object" &&
-    data !== null &&
-    "message" in data &&
-    typeof data.message === "string"
-  ) {
-    return data.message;
-  }
-
-  return "로그인 처리 중 오류가 발생했습니다.";
-}
+import { fetchApiJson } from "@/lib/api/client";
 
 export function LoginForm() {
   const router = useRouter();
@@ -45,27 +28,24 @@ export function LoginForm() {
     const formData = new FormData(event.currentTarget);
 
     try {
-      const response = await fetch("/api/v1/auth/login", {
+      await fetchApiJson("/api/v1/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+        body: {
           email: formData.get("email"),
           password: formData.get("password"),
-        }),
+        },
+      }, {
+        fallbackMessage: "로그인 처리 중 오류가 발생했습니다.",
       });
-      const data = (await response.json().catch(() => null)) as LoginApiResponse | null;
-
-      if (!response.ok || data?.status !== "success") {
-        setErrorMessage(getResponseMessage(data));
-        return;
-      }
 
       router.push("/");
       router.refresh();
-    } catch {
-      setErrorMessage("네트워크 오류가 발생했습니다. 다시 시도해주세요.");
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "네트워크 오류가 발생했습니다. 다시 시도해주세요.",
+      );
     } finally {
       setIsSubmitting(false);
     }

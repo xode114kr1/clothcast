@@ -5,11 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import {
-  type ApiResponse,
-  buildClothesPayload,
-  getResponseMessage,
-} from "./clothes-form-utils";
+import { fetchApiJson } from "@/lib/api/client";
+
+import { buildClothesPayload } from "./clothes-form-utils";
 import { ImagePicker } from "./image-picker";
 import { useClothesImageUpload } from "./use-clothes-image-upload";
 import { WardrobeItemFormFields } from "./wardrobe-item-form-fields";
@@ -27,20 +25,12 @@ export function NewWardrobeItemForm() {
   const errorId = "new-wardrobe-item-error";
 
   async function createClothes(formData: FormData, imageUrl: string) {
-    const response = await fetch("/api/v1/clothes", {
+    await fetchApiJson("/api/v1/clothes", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(buildClothesPayload(formData, imageUrl)),
+      body: buildClothesPayload(formData, imageUrl),
+    }, {
+      fallbackMessage: "의류 등록 중 오류가 발생했습니다.",
     });
-    const data = (await response.json().catch(() => null)) as ApiResponse | null;
-
-    if (!response.ok || data?.status !== "success") {
-      throw new Error(
-        getResponseMessage(data, "의류 등록 중 오류가 발생했습니다."),
-      );
-    }
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {

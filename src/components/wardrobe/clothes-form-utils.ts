@@ -6,54 +6,22 @@ import type {
   ClothingFit,
 } from "./wardrobe-item-form-types";
 
-export type ApiResponse = {
-  status: "success" | "error";
-  message: string;
-  data?: unknown;
-};
-
-type UploadResponseData = {
-  imageUrl: string;
-};
-
-export function getResponseMessage(
-  data: unknown,
-  fallbackMessage = "의류 정보를 처리하는 중 오류가 발생했습니다.",
-) {
+export function isClothesItem(value: unknown): value is ClothesItem {
   if (
-    typeof data === "object" &&
-    data !== null &&
-    "message" in data &&
-    typeof data.message === "string"
+    typeof value !== "object" ||
+    value === null ||
+    Array.isArray(value)
   ) {
-    return data.message;
+    return false;
   }
 
-  return fallbackMessage;
-}
+  const item = value as Record<string, unknown>;
 
-export function getClothesItem(data: ApiResponse | null) {
-  const item = data?.data as ClothesItem | undefined;
-
-  if (
-    typeof item?.id === "number" &&
+  return (
+    typeof item.id === "number" &&
     typeof item.name === "string" &&
     typeof item.imageUrl === "string"
-  ) {
-    return item;
-  }
-
-  return null;
-}
-
-export function getUploadedImageUrl(data: ApiResponse | null) {
-  const payload = data?.data as UploadResponseData | undefined;
-
-  if (typeof payload?.imageUrl === "string") {
-    return payload.imageUrl;
-  }
-
-  return null;
+  );
 }
 
 function getRequiredString(formData: FormData, key: string) {

@@ -5,12 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import {
-  type ApiResponse,
-  buildClothesPayload,
-  getClothesItem,
-  getResponseMessage,
-} from "./clothes-form-utils";
+import { fetchApiData, fetchApiJson } from "@/lib/api/client";
+
+import { buildClothesPayload, isClothesItem } from "./clothes-form-utils";
 import { ImagePicker } from "./image-picker";
 import { useClothesImageUpload } from "./use-clothes-image-upload";
 import { WardrobeItemFormFields } from "./wardrobe-item-form-fields";
@@ -41,24 +38,17 @@ export function EditWardrobeItemForm({ clothesId }: EditWardrobeItemFormProps) {
       setErrorMessage("");
 
       try {
-        const response = await fetch(`/api/v1/clothes/${clothesId}`);
-        const data = (await response.json().catch(() => null)) as ApiResponse | null;
-
-        if (!response.ok || data?.status !== "success") {
-          if (!ignore) {
-            setErrorMessage(getResponseMessage(data));
-          }
-          return;
-        }
-
-        const clothes = getClothesItem(data);
-
-        if (!clothes) {
-          if (!ignore) {
-            setErrorMessage("의류 상세 응답이 올바르지 않습니다.");
-          }
-          return;
-        }
+        const clothes = await fetchApiData<ClothesItem>(
+          `/api/v1/clothes/${clothesId}`,
+          {
+            method: "GET",
+          },
+          {
+            fallbackMessage: "의류 정보를 처리하는 중 오류가 발생했습니다.",
+            invalidDataMessage: "의류 상세 응답이 올바르지 않습니다.",
+            validateData: isClothesItem,
+          },
+        );
 
         if (!ignore) {
           setItem(clothes);
@@ -82,20 +72,12 @@ export function EditWardrobeItemForm({ clothesId }: EditWardrobeItemFormProps) {
   }, [clothesId]);
 
   async function updateClothes(formData: FormData, imageUrl: string) {
-    const response = await fetch(`/api/v1/clothes/${clothesId}`, {
+    await fetchApiJson(`/api/v1/clothes/${clothesId}`, {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(buildClothesPayload(formData, imageUrl)),
+      body: buildClothesPayload(formData, imageUrl),
+    }, {
+      fallbackMessage: "의류 수정 중 오류가 발생했습니다.",
     });
-    const data = (await response.json().catch(() => null)) as ApiResponse | null;
-
-    if (!response.ok || data?.status !== "success") {
-      throw new Error(
-        getResponseMessage(data, "의류 수정 중 오류가 발생했습니다."),
-      );
-    }
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {

@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Pencil, Trash2 } from "lucide-react";
 
+import { fetchApiData } from "@/lib/api/client";
+
 type ClothesItem = {
   id: number;
   name: string;
@@ -16,12 +18,6 @@ type ClothesItem = {
   pattern: string | null;
   imageUrl: string;
   createdAt?: string;
-};
-
-type ClothesListResponse = {
-  status: "success" | "error";
-  message: string;
-  data?: ClothesItem[] | { code?: string };
 };
 
 const categoryLabels: Record<ClothesItem["category"], string> = {
@@ -36,20 +32,6 @@ const fitLabels: Record<ClothesItem["fit"], string> = {
   regular: "레귤러",
   slim: "슬림",
 };
-
-// 알 수 없는 API 응답에서 사용자에게 보여줄 메시지를 추출한다.
-function getResponseMessage(data: unknown) {
-  if (
-    typeof data === "object" &&
-    data !== null &&
-    "message" in data &&
-    typeof data.message === "string"
-  ) {
-    return data.message;
-  }
-
-  return "옷장 데이터를 처리하는 중 오류가 발생했습니다.";
-}
 
 // GET /api/v1/clothes 응답의 data가 의류 배열인지 확인한다.
 function isClothesList(value: unknown): value is ClothesItem[] {
@@ -71,24 +53,27 @@ export function WardrobeList() {
       setErrorMessage("");
 
       try {
-        const response = await fetch("/api/v1/clothes", {
-          method: "GET",
-        });
-        const data = (await response.json().catch(() => null)) as ClothesListResponse | null;
-
-        if (!response.ok || data?.status !== "success" || !isClothesList(data.data)) {
-          if (!ignore) {
-            setErrorMessage(getResponseMessage(data));
-          }
-          return;
-        }
+        const clothes = await fetchApiData<ClothesItem[]>(
+          "/api/v1/clothes",
+          {
+            method: "GET",
+          },
+          {
+            fallbackMessage: "옷장 데이터를 처리하는 중 오류가 발생했습니다.",
+            validateData: isClothesList,
+          },
+        );
 
         if (!ignore) {
-          setItems(data.data);
+          setItems(clothes);
         }
-      } catch {
+      } catch (error) {
         if (!ignore) {
-          setErrorMessage("네트워크 오류가 발생했습니다. 다시 시도해주세요.");
+          setErrorMessage(
+            error instanceof Error
+              ? error.message
+              : "네트워크 오류가 발생했습니다. 다시 시도해주세요.",
+          );
         }
       } finally {
         if (!ignore) {
@@ -120,21 +105,25 @@ export function WardrobeList() {
     setErrorMessage("");
 
     try {
-      const response = await fetch(`/api/v1/clothes/${item.id}`, {
-        method: "DELETE",
-      });
-      const data = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        setErrorMessage(getResponseMessage(data));
-        return;
-      }
+      await fetchApiData(
+        `/api/v1/clothes/${item.id}`,
+        {
+          method: "DELETE",
+        },
+        {
+          fallbackMessage: "옷장 데이터를 처리하는 중 오류가 발생했습니다.",
+        },
+      );
 
       setItems((currentItems) =>
         currentItems.filter((currentItem) => currentItem.id !== item.id),
       );
-    } catch {
-      setErrorMessage("네트워크 오류가 발생했습니다. 다시 시도해주세요.");
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "네트워크 오류가 발생했습니다. 다시 시도해주세요.",
+      );
     } finally {
       setDeletingId(null);
     }
