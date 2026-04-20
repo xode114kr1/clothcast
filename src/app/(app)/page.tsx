@@ -1,12 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { cookies } from "next/headers";
 import { ArrowRight, Leaf, Sparkles, Factory, Heart } from "lucide-react";
 
 import { HomeWeatherCard } from "@/components/home/home-weather-card";
 import { WeatherAwareChoiceDescription } from "@/components/home/weather-aware-choice-description";
 import { CurrentWeatherProvider } from "@/components/recommendations/current-weather-provider";
-import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/auth/session";
+import { getCurrentSessionUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 
 const valueProps = [
@@ -36,14 +35,7 @@ const valueProps = [
 ];
 
 async function getHomeUser() {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-
-  if (!sessionToken) {
-    return null;
-  }
-
-  const session = await verifySessionToken(sessionToken);
+  const session = await getCurrentSessionUser();
 
   if (!session) {
     return null;

@@ -1,108 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Pencil, Trash2 } from "lucide-react";
 
-type ClothesItem = {
-  id: number;
-  name: string;
-  category: "TOP" | "BOTTOM" | "OUTER" | "SHOES";
-  color: string;
-  fit: "oversized" | "regular" | "slim";
-  formality: number;
-  material: string | null;
-  pattern: string | null;
-  imageUrl: string;
-  createdAt?: string;
+import { fetchApiData } from "@/lib/api/client";
+import {
+  getClothingCategoryLabel,
+  getClothingFitLabel,
+  type ClothesItem,
+} from "@/lib/clothes/clothes-form-types";
+
+type WardrobeListProps = {
+  initialItems: ClothesItem[];
 };
 
-type ClothesListResponse = {
-  status: "success" | "error";
-  message: string;
-  data?: ClothesItem[] | { code?: string };
-};
-
-const categoryLabels: Record<ClothesItem["category"], string> = {
-  TOP: "상의",
-  BOTTOM: "하의",
-  OUTER: "아우터",
-  SHOES: "신발",
-};
-
-const fitLabels: Record<ClothesItem["fit"], string> = {
-  oversized: "오버사이즈",
-  regular: "레귤러",
-  slim: "슬림",
-};
-
-// 알 수 없는 API 응답에서 사용자에게 보여줄 메시지를 추출한다.
-function getResponseMessage(data: unknown) {
-  if (
-    typeof data === "object" &&
-    data !== null &&
-    "message" in data &&
-    typeof data.message === "string"
-  ) {
-    return data.message;
-  }
-
-  return "옷장 데이터를 처리하는 중 오류가 발생했습니다.";
-}
-
-// GET /api/v1/clothes 응답의 data가 의류 배열인지 확인한다.
-function isClothesList(value: unknown): value is ClothesItem[] {
-  return Array.isArray(value);
-}
-
-export function WardrobeList() {
-  const [items, setItems] = useState<ClothesItem[]>([]);
+export function WardrobeList({ initialItems }: WardrobeListProps) {
+  const [items, setItems] = useState<ClothesItem[]>(initialItems);
   const [errorMessage, setErrorMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<number | null>(null);
-
-  // 옷장 진입 시 로그인 사용자의 의류 목록을 불러온다.
-  useEffect(() => {
-    let ignore = false;
-
-    async function loadClothes() {
-      setIsLoading(true);
-      setErrorMessage("");
-
-      try {
-        const response = await fetch("/api/v1/clothes", {
-          method: "GET",
-        });
-        const data = (await response.json().catch(() => null)) as ClothesListResponse | null;
-
-        if (!response.ok || data?.status !== "success" || !isClothesList(data.data)) {
-          if (!ignore) {
-            setErrorMessage(getResponseMessage(data));
-          }
-          return;
-        }
-
-        if (!ignore) {
-          setItems(data.data);
-        }
-      } catch {
-        if (!ignore) {
-          setErrorMessage("네트워크 오류가 발생했습니다. 다시 시도해주세요.");
-        }
-      } finally {
-        if (!ignore) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    void loadClothes();
-
-    return () => {
-      ignore = true;
-    };
-  }, []);
 
   // 삭제 버튼 클릭 시 확인 후 API를 호출하고 성공한 항목을 화면에서 제거한다.
   async function handleDelete(item: ClothesItem) {
@@ -120,36 +37,28 @@ export function WardrobeList() {
     setErrorMessage("");
 
     try {
-      const response = await fetch(`/api/v1/clothes/${item.id}`, {
-        method: "DELETE",
-      });
-      const data = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        setErrorMessage(getResponseMessage(data));
-        return;
-      }
+      await fetchApiData(
+        `/api/v1/clothes/${item.id}`,
+        {
+          method: "DELETE",
+        },
+        {
+          fallbackMessage: "옷장 데이터를 처리하는 중 오류가 발생했습니다.",
+        },
+      );
 
       setItems((currentItems) =>
         currentItems.filter((currentItem) => currentItem.id !== item.id),
       );
-    } catch {
-      setErrorMessage("네트워크 오류가 발생했습니다. 다시 시도해주세요.");
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "네트워크 오류가 발생했습니다. 다시 시도해주세요.",
+      );
     } finally {
       setDeletingId(null);
     }
-  }
-
-  if (isLoading) {
-    return (
-      <section
-        aria-busy="true"
-        className="rounded-[var(--radius-xl)] px-8 py-16 text-center"
-        style={{ backgroundColor: "var(--surface-container-low)" }}
-      >
-        <p className="font-semibold text-[#404753]">옷장을 불러오는 중입니다.</p>
-      </section>
-    );
   }
 
   if (errorMessage) {
@@ -159,13 +68,6 @@ export function WardrobeList() {
         style={{ backgroundColor: "rgb(255 218 214 / 0.32)" }}
       >
         <p className="font-semibold text-[#8c1d18]">{errorMessage}</p>
-        <Link
-          className="mt-6 inline-flex rounded-full px-8 py-3 text-sm font-bold text-white"
-          href="/login"
-          style={{ background: "var(--gradient-hero)" }}
-        >
-          로그인하기
-        </Link>
       </section>
     );
   }
@@ -215,7 +117,7 @@ export function WardrobeList() {
 
             <div className="absolute left-4 top-4 flex flex-wrap gap-2">
               <span className="rounded-full bg-[rgb(255_255_255_/_0.9)] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--primary)] shadow-sm backdrop-blur">
-                {categoryLabels[item.category]}
+                {getClothingCategoryLabel(item.category)}
               </span>
             </div>
 
@@ -253,7 +155,7 @@ export function WardrobeList() {
                 className="rounded-full px-3 py-1 text-xs font-medium text-[#404753]"
                 style={{ backgroundColor: "var(--surface-container-low)" }}
               >
-                {fitLabels[item.fit]}
+                {getClothingFitLabel(item.fit)}
               </span>
               <span
                 className="rounded-full px-3 py-1 text-xs font-medium text-[#404753]"

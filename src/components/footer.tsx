@@ -4,9 +4,9 @@ import { Share2 } from "lucide-react";
 export function Footer() {
   return (
     <footer
-      className="mt-24 w-full border-t bg-slate-50 py-12 text-sm tracking-wide"
+      className="mt-24 w-full py-12 text-sm tracking-wide"
       style={{
-        borderColor: "#e2e8f0",
+        backgroundColor: "var(--surface-container-low)",
         fontFamily: "var(--font-body)",
       }}
     >

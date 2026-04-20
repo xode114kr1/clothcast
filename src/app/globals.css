@@ -12,6 +12,7 @@
   --primary-fixed: #d3e4ff;
   --accent: #7ddcff;
   --outline-variant: rgb(191 199 213 / 15%);
+  --ghost-border: var(--outline-variant);
 
   /* Surface hierarchy */
   --surface: #f8f9fa;
@@ -190,7 +191,7 @@ canvas {
 
 .theme-glass {
   background: var(--glass-surface);
-  border: 1px solid var(--outline-variant);
+  border: 1px solid var(--ghost-border);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   box-shadow: var(--shadow-ambient-sm);
@@ -254,7 +255,7 @@ canvas {
 }
 
 .theme-ghost-outline {
-  outline: 1px solid var(--outline-variant);
+  outline: 1px solid var(--ghost-border);
 }
 
 @media (max-width: 768px) {

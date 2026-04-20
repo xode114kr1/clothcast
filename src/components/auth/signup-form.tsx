@@ -6,24 +6,7 @@ import type { FormEvent } from "react";
 import { useState } from "react";
 import { AlertTriangle, ArrowRight, Lock, Mail, User } from "lucide-react";
 
-type SignupApiResponse = {
-  status: "success" | "error";
-  message: string;
-  data?: unknown;
-};
-
-function getResponseMessage(data: unknown) {
-  if (
-    typeof data === "object" &&
-    data !== null &&
-    "message" in data &&
-    typeof data.message === "string"
-  ) {
-    return data.message;
-  }
-
-  return "회원가입 처리 중 오류가 발생했습니다.";
-}
+import { fetchApiJson } from "@/lib/api/client";
 
 export function SignupForm() {
   const router = useRouter();
@@ -45,28 +28,25 @@ export function SignupForm() {
     const formData = new FormData(event.currentTarget);
 
     try {
-      const response = await fetch("/api/v1/auth/signup", {
+      await fetchApiJson("/api/v1/auth/signup", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+        body: {
           nickname: formData.get("nickname"),
           email: formData.get("email"),
           password: formData.get("password"),
-        }),
+        },
+      }, {
+        fallbackMessage: "회원가입 처리 중 오류가 발생했습니다.",
       });
-      const data = (await response.json().catch(() => null)) as SignupApiResponse | null;
-
-      if (!response.ok || data?.status !== "success") {
-        setErrorMessage(getResponseMessage(data));
-        return;
-      }
 
       router.push("/login");
       router.refresh();
-    } catch {
-      setErrorMessage("네트워크 오류가 발생했습니다. 다시 시도해주세요.");
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "네트워크 오류가 발생했습니다. 다시 시도해주세요.",
+      );
     } finally {
       setIsSubmitting(false);
     }

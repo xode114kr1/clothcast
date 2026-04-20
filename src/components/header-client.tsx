@@ -5,6 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Home, LogOut, Shirt, Sparkles, User } from "lucide-react";
 
+import { fetchApiData } from "@/lib/api/client";
+
 const navItems = [
   { key: "home", label: "Home", href: "/", icon: Home },
   { key: "wardrobe", label: "Wardrobe", href: "/wardrobe", icon: Shirt },
@@ -52,9 +54,15 @@ export function HeaderClient({ user }: HeaderClientProps) {
     setIsLoggingOut(true);
 
     try {
-      await fetch("/api/v1/auth/logout", {
-        method: "POST",
-      });
+      await fetchApiData(
+        "/api/v1/auth/logout",
+        {
+          method: "POST",
+        },
+        {
+          fallbackMessage: "로그아웃 처리 중 오류가 발생했습니다.",
+        },
+      );
     } finally {
       setIsUserMenuOpen(false);
       setIsLoggingOut(false);
