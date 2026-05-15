@@ -16,9 +16,13 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return apiError("요청 본문이 올바른 JSON 형식이 아닙니다.", "INVALID_REQUEST", {
-      status: 400,
-    });
+    return apiError(
+      "요청 본문이 올바른 JSON 형식이 아닙니다.",
+      "INVALID_REQUEST",
+      {
+        status: 400,
+      },
+    );
   }
 
   const payload = isRecord(body) ? body : {};
@@ -70,6 +74,7 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch (error) {
+    console.error("[SIGNUP_ERROR]", error);
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2002"
